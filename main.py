@@ -3,6 +3,8 @@
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
+from pyswip import Prolog
+
 # 3x3 Map Cell
 # 1: Confounded. "%"
 # 2: Stench. ”=”
@@ -210,12 +212,9 @@ def agentOn(x, y, dir):
     absoluteMap[dictionary[(x, y)]][3] = "-"
     absoluteMap[dictionary[(x, y)]][5] = "-"
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
+def initialize():
     createMap()
     print("Initializing Empty Map...")
-    printMap()
 
     wumpusOn(1, 3)
     portalOn(5, 4)
@@ -224,7 +223,19 @@ if __name__ == '__main__':
     coinOn(2, 3)
     agentOn(1, 1, "North")
     printMap()
-    print(absoluteMap)
+
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    prolog = Prolog()
+    prolog.consult("Agent.pl")
+
+    # Initialize the map with Wumpus, Portals, Coin and Agent
+    initialize()
+    
+    
+
+    
+
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

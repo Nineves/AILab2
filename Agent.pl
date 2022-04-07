@@ -33,7 +33,7 @@ member(V,[shoot,moveforward,turnleft,turnright,pickup])
 
 
 
-%L = [Confounded, Stench, Tingle, Glitter, Bump, Scream]
+% L = [Confounded, Stench, Tingle, Glitter, Bump, Scream]
 move(A,L) :-  
 (A == shoot, hasarrow, nth0(5,L,on)); 			% the wumpus is dead and the agent loses arrow.
 (A == shoot, hasarrow, nth0(5,L,off) -> retractall(hasarrow)); 			% the agent loses arrow
@@ -44,20 +44,18 @@ move(A,L) :-
 (A == moveforward, nth0(4,L,on));
 (A == turnleft, current(X,Y,D),turnLeft(D,N),retractall(current(_,_,_)),assertz(current(X,Y,N)));
 (A == turnright, current(X,Y,D),turnRight(D,N),retractall(current(_,_,_)),assertz(current(X,Y,N)));
-(A == pickup, current(X,Y,D), nth0(3,L,on) -> reatractall(glitter(X,Y)));
+(A == pickup, current(X,Y,D), nth0(3,L,on) -> reatractall(glitter(X,Y))).
 
 
 move(A,L) :-
 updateKB(L),(
-(current(X,Y,D),nth0(3,L,on) -> (A is pickup, retractall(glitter(X,Y))); %if glitter then pick up the coin
+((current(X,Y,D),nth0(3,L,on) -> (A is pickup, retractall(glitter(X,Y))); %if glitter then pick up the coin
 (current(X,Y,D), hasarrow, inSameDirection(X,Y,D) -> (A is shoot, retractall(hasarrow)) );
 (current(X,Y,D), nth0(4,L,off), D == rnorth, safe(X,Y-1)) -> (A is moveforward));
 (current(X,Y,D), nth0(4,L,off), D == rsouth, safe(X,Y+1)) -> (A is moveforward));
 (current(X,Y,D), nth0(4,L,off), D == rwest, safe(X-1,Y)) -> (A is moveforward));
 (current(X,Y,D), nth0(4,L,off), D == reast, safe(X+1, Y)) -> (A is moveforward));
-(current(X,Y,D), nth0(4,L,on)) - > (A is turnright)); %Bump at wall
-？？？ How will the agent decide how to move(path finding?)
-
+(current(X,Y,D), nth0(4,L,on)) - > (A is turnright)); 
 
 ).
 
