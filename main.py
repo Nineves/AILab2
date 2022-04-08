@@ -3,6 +3,8 @@
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
+from nis import match
+from unittest import case
 from pyswip import Prolog
 
 # 3x3 Map Cell
@@ -35,6 +37,7 @@ mapCell = [".", ".", ".", " ", "?", " ", ".", ".", "."]
 wall = ["#", "#", "#", "#", "#", "#", "#", "#", "#"]
 absoluteMap = []
 
+# Co-ordinates to absoluteMap index
 dictionary = {
     (1, 4): 8,
     (2, 4): 9,
@@ -58,6 +61,316 @@ dictionary = {
     (5, 1): 33
 }
 
+# agent's position
+agentPos = {
+
+}
+
+# update agent's position
+def updateAgent(x, y, dir):
+    agentPos["x"] = x
+    agentPos["y"] = y
+    agentPos["dir"] = dir
+
+# reset agent
+def resetAgent():
+    agentPos.clear()
+
+# Build Percept List
+# Confounded, Stench, Tingle, Glitter, Bump, Scream
+# 0, 1, 2, 6, 7, 8
+def getPercepts(List):
+    L = []
+    for i in List:
+        if i != ".":
+            L.append("on")
+        else:
+            L.append("off")
+    return L
+
+# agent's action
+def agentAction(action):
+    # get agent's current direction
+    dir = agentPos["dir"]
+    x = agentPos["x"]
+    y = agentPos["y"]
+
+    if action == "moveforward":
+        if dir == "North":
+            # Update map
+            index = dictionary.get((x, y))
+            absoluteMap[index][3] = "."
+            absoluteMap[index][4] = "S"
+            absoluteMap[index][5] = "."
+
+            index = dictionary.get((x, y+1))
+            if index:
+                # Update agent's position
+                updateAgent(x, y+1, "North")
+                # Update map
+                absoluteMap[index][3] = "-"
+                absoluteMap[index][4] = "^"
+                absoluteMap[index][5] = "-"
+                # Update Prolog's knowledge base
+                L = getPercepts(absoluteMap[index])
+                # Prolog's move(A,L)
+            else:
+                # BUMPED INTO WALL
+                # Revert Map
+                index = dictionary.get((x, y))
+                absoluteMap[index][3] = "-"
+                absoluteMap[index][4] = "^"
+                absoluteMap[index][5] = "-"
+                # Set bump indicator ON
+                absoluteMap[index][7] = "B"
+                # Update Prolog's knowledge base
+                L = getPercepts(absoluteMap[index])
+                # Prolog's move(A,L)
+                # Set bump indicator OFF
+                absoluteMap[index][7] = "."
+            
+        elif dir == "East":
+            # Update map
+            index = dictionary.get((x, y))
+            absoluteMap[index][3] = "."
+            absoluteMap[index][4] = "S"
+            absoluteMap[index][5] = "."
+
+            index = dictionary.get((x+1, y))
+            if index:
+                # Update agent's position
+                updateAgent(x+1, y, "East")
+                # Update map
+                absoluteMap[index][3] = "-"
+                absoluteMap[index][4] = ">"
+                absoluteMap[index][5] = "-"
+                # Update Prolog's knowledge base
+                L = getPercepts(absoluteMap[index])
+                # Prolog's move(A,L)
+            else:
+                # BUMPED INTO WALL
+                # Revert Map
+                index = dictionary.get((x, y))
+                absoluteMap[index][3] = "-"
+                absoluteMap[index][4] = ">"
+                absoluteMap[index][5] = "-"
+                # Set bump indicator ON
+                absoluteMap[index][7] = "B"
+                # Update Prolog's knowledge base
+                L = getPercepts(absoluteMap[index])
+                # Prolog's move(A,L)
+                # Set bump indicator OFF
+                absoluteMap[index][7] = "."
+        elif dir == "South":
+            # Update map
+            index = dictionary.get((x, y))
+            absoluteMap[index][3] = "."
+            absoluteMap[index][4] = "S"
+            absoluteMap[index][5] = "."
+
+            index = dictionary.get((x, y-1))
+            if index:
+                # Update agent's position
+                updateAgent(x, y-1, "South")
+                # Update map
+                absoluteMap[index][3] = "-"
+                absoluteMap[index][4] = "v"
+                absoluteMap[index][5] = "-"
+                # Update Prolog's knowledge base
+                L = getPercepts(absoluteMap[index])
+                # Prolog's move(A,L)
+            else:
+                # BUMPED INTO WALL
+                # Revert Map
+                index = dictionary.get((x, y))
+                absoluteMap[index][3] = "-"
+                absoluteMap[index][4] = "v"
+                absoluteMap[index][5] = "-"
+                # Set bump indicator ON
+                absoluteMap[index][7] = "B"
+                # Update Prolog's knowledge base
+                L = getPercepts(absoluteMap[index])
+                # Prolog's move(A,L)
+                # Set bump indicator OFF
+                absoluteMap[index][7] = "."
+        elif dir == "West":
+            # Update map
+            index = dictionary.get((x, y))
+            absoluteMap[index][3] = "."
+            absoluteMap[index][4] = "S"
+            absoluteMap[index][5] = "."
+
+            index = dictionary.get((x-1, y))
+            if index:
+                # Update agent's position
+                updateAgent(x-1, y, "West")
+                # Update map
+                absoluteMap[index][3] = "-"
+                absoluteMap[index][4] = "<"
+                absoluteMap[index][5] = "-"
+                # Update Prolog's knowledge base
+                L = getPercepts(absoluteMap[index])
+                # Prolog's move(A,L)
+            else:
+                # BUMPED INTO WALL
+                # Revert Map
+                index = dictionary.get((x, y))
+                absoluteMap[index][3] = "-"
+                absoluteMap[index][4] = "<"
+                absoluteMap[index][5] = "-"
+                # Set bump indicator ON
+                absoluteMap[index][7] = "B"
+                # Update Prolog's knowledge base
+                L = getPercepts(absoluteMap[index])
+                # Prolog's move(A,L)
+                # Set bump indicator OFF
+                absoluteMap[index][7] = "."
+    elif action == "turnLeft":
+        if dir == "North":
+            # Update Map
+            index = dictionary.get((x, y))
+            absoluteMap[index][4] = "<"
+            updateAgent(x, y, "West")
+            # Update Prolog's knowledge base
+            L = getPercepts(absoluteMap[index])
+            # Prolog's move(A,L)
+            
+        elif dir == "East":
+            # Update Map
+            index = dictionary.get((x, y))
+            absoluteMap[index][4] = "^"
+            updateAgent(x, y, "North")
+            # Update Prolog's knowledge base
+            L = getPercepts(absoluteMap[index])
+            # Prolog's move(A,L)
+        elif dir == "South":
+            # Update Map
+            index = dictionary.get((x, y))
+            absoluteMap[index][4] = ">"
+            updateAgent(x, y, "East")
+            # Update Prolog's knowledge base
+            L = getPercepts(absoluteMap[index])
+            # Prolog's move(A,L)
+        elif dir == "West":
+            # Update Map
+            index = dictionary.get((x, y))
+            absoluteMap[index][4] = "v"
+            updateAgent(x, y, "South")
+            # Update Prolog's knowledge base
+            L = getPercepts(absoluteMap[index])
+            # Prolog's move(A,L)
+
+    elif action == "turnRight":
+        if dir == "North":
+            # Update Map
+            index = dictionary.get((x, y))
+            absoluteMap[index][4] = ">"
+            updateAgent(x, y, "East")
+            # Update Prolog's knowledge base
+            L = getPercepts(absoluteMap[index])
+            # Prolog's move(A,L)
+        elif dir == "East":
+            # Update Map
+            index = dictionary.get((x, y))
+            absoluteMap[index][4] = "v"
+            updateAgent(x, y, "South")
+            # Update Prolog's knowledge base
+            L = getPercepts(absoluteMap[index])
+            # Prolog's move(A,L)
+        elif dir == "South":
+            # Update Map
+            index = dictionary.get((x, y))
+            absoluteMap[index][4] = "<"
+            updateAgent(x, y, "West")
+            # Update Prolog's knowledge base
+            L = getPercepts(absoluteMap[index])
+            # Prolog's move(A,L)
+        elif dir == "West":
+            # Update Map
+            index = dictionary.get((x, y))
+            absoluteMap[index][4] = "^"
+            updateAgent(x, y, "North")
+            # Update Prolog's knowledge base
+            L = getPercepts(absoluteMap[index])
+            # Prolog's move(A,L)
+    elif action == "pickup":
+        # Update Map
+        # Turn off Glitter
+        index = dictionary.get((x, y))
+        absoluteMap[index][6] = "."
+        # Update Prolog's knowledge base
+        L = getPercepts(absoluteMap[index])
+        # Prolog's move(A,L)
+    elif action == "shoot":
+        index = dictionary.get((x, y))
+        if dir == "North":
+            tempIndex = 1
+            tempY = y
+            while tempIndex:
+                tempY += 1
+                tempIndex = dictionary.get((x, tempY))
+                if tempIndex:
+                    # Check for Wumpus
+                    if absoluteMap[tempIndex][4] == "W":
+                        # Scream Indicator On
+                        absoluteMap[index][8] = "@"
+                        # Update Prolog's knowledge base
+                        L = getPercepts(absoluteMap[index])
+                        # Prolog's move(A,L)
+                        # Scream Indicator Off
+                        absoluteMap[index][8] = "."
+
+        elif dir == "East":
+            tempIndex = 1
+            tempX = x
+            while tempIndex:
+                tempX += 1
+                tempIndex = dictionary.get((tempX, y))
+                if tempIndex:
+                    # Check for Wumpus
+                    if absoluteMap[tempIndex][4] == "W":
+                        # Scream Indicator On
+                        absoluteMap[index][8] = "@"
+                        # Update Prolog's knowledge base
+                        L = getPercepts(absoluteMap[index])
+                        # Prolog's move(A,L)
+                        # Scream Indicator Off
+                        absoluteMap[index][8] = "."
+        elif dir == "South":
+            tempIndex = 1
+            tempY = y
+            while tempIndex:
+                tempY -= 1
+                tempIndex = dictionary.get((x, tempY))
+                if tempIndex:
+                    # Check for Wumpus
+                    if absoluteMap[tempIndex][4] == "W":
+                        # Scream Indicator On
+                        absoluteMap[index][8] = "@"
+                        # Update Prolog's knowledge base
+                        L = getPercepts(absoluteMap[index])
+                        # Prolog's move(A,L)
+                        # Scream Indicator Off
+                        absoluteMap[index][8] = "."
+        elif dir == "West":
+            tempIndex = 1
+            tempX = x
+            while tempIndex:
+                tempX -= 1
+                tempIndex = dictionary.get((tempX, y))
+                if tempIndex:
+                    # Check for Wumpus
+                    if absoluteMap[tempIndex][4] == "W":
+                        # Scream Indicator On
+                        absoluteMap[index][8] = "@"
+                        # Update Prolog's knowledge base
+                        L = getPercepts(absoluteMap[index])
+                        # Prolog's move(A,L)
+                        # Scream Indicator Off
+                        absoluteMap[index][8] = "."
+
+    # Print Map
+    printMap()
 
 # Create Map
 def createMap():
@@ -77,7 +390,8 @@ def createMap():
 
 
 def printMap():
-    current = cols  # 7
+    print("===========================================================")
+    current = cols
     prev = 0
     total = rows * cols
     while total > 0:
