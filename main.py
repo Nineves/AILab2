@@ -506,7 +506,7 @@ def portalOn(x, y):
 
 def coinOn(x, y):
     print("Placing Coin at: (", x, ",", y, ")")
-    absoluteMap[dictionary[(x, y)]][4] = "G"
+    absoluteMap[dictionary[(x, y)]][4] = "?"
 
     # Set Glitter indicator
     absoluteMap[dictionary[(x, y)]][6] = "*"
