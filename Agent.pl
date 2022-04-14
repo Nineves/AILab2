@@ -9,7 +9,9 @@ retractall(tingle(_,_)),
 retractall(glitter(_,_)),
 retractall(stench(_,_)),
 retractall(current(_,_,_)),
-retractall(wall(_,_,_)),
+retractall(wumpus(_,_)),
+retractall(confundus(_,_)),
+retractall(wall(_,_)),
 retractall(safeToVisit(_,_)),
 assertz(current(0,0,rnorth)),
 assertz(wumpusalive).
@@ -30,6 +32,8 @@ assertz(wumpusalive).
 :- dynamic tingle/2.
 :- dynamic wall/2.
 :- dynamic exploredPath/1.
+:- dynamic wumpus/2.
+:- dynamic confundus/2.
 :- dynamic safeToVisit/2.
 
 
@@ -48,7 +52,7 @@ move(A,L) :-
 (A == moveforward, nth0(4,L,on),current(X,Y,D), getForward(X,Y,D,X2,Y2), assertz(wall(X2,Y2)));
 (A == turnleft, current(X,Y,D),turnLeft(D,N),retractall(current(_,_,_)),assertz(current(X,Y,N)));
 (A == turnright, current(X,Y,D),turnRight(D,N),retractall(current(_,_,_)),assertz(current(X,Y,N)));
-(A == pickup, current(X,Y,D), nth0(3,L,on), reatractall(glitter(X,Y))).
+(A == pickup, current(X,Y,D), retractall(glitter(X,Y))).
 
 
 adjacent(X1,Y1,X2,Y2) :-
@@ -63,7 +67,9 @@ updateS(L),
 updateT(L),
 updateW(L),
 updateG(L),
-updateAbsSafe.
+updateAbsSafe,
+updateAbsWumpus,
+updateAbsPortal.
 
 
 updateS(L) :-
@@ -93,6 +99,38 @@ Yplus is Y+1,
 (safe(Xplus,Y) -> assertz(safeToVisit(Xplus,Y)); true),
 (safe(X,Yminus) -> assertz(safeToVisit(X,Yminus)); true),
 (safe(X,Yplus) -> assertz(safeToVisit(X,Yplus)); true).
+
+updateAbsWumpus:-
+current(X,Y,D),
+Xminus is X-1,
+Xplus is X+1,
+Yminus is Y-1,
+Yplus is Y+1,
+retractall(wumpus(Xminus,Y)),
+retractall(wumpus(Xplus,Y)),
+retractall(wumpus(X,Yminus)),
+retractall(wumpus(X,Yplus)),
+(checkWumpus(X,Yplus) -> assertz(wumpus(X,Yplus)); true),
+(checkWumpus(Xminus,Y) -> assertz(wumpus(Xminus,Y)); true),
+(checkWumpus(Xplus,Y) -> assertz(wumpus(Xplus,Y)); true),
+(checkWumpus(X,Yminus) -> assertz(wumpus(X,Yminus)); true).
+
+
+updateAbsPortal:-
+
+current(X,Y,D),
+Xminus is X-1,
+Xplus is X+1,
+Yminus is Y-1,
+Yplus is Y+1,
+retractall(confundus(Xminus,Y)),
+retractall(wumpus(Xplus,Y)),
+retractall(wumpus(X,Yminus)),
+retractall(wumpus(X,Yplus)),
+(checkWumpus(Xminus,Y) -> assertz(wumpus(Xminus,Y)); true),
+(checkWumpus(Xplus,Y) -> assertz(wumpus(Xplus,Y)); true),
+(checkWumpus(X,Yminus) -> assertz(wumpus(X,Yminus)); true),
+(checkWumpus(X,Yplus) -> assertz(swumpus(X,Yplus)); true).
 
 getForward(X,Y,D,X2,Y2) :-
  
@@ -135,16 +173,24 @@ inSameDirection(X,Y,D,X2,Y2):-
 
 
 reposition(L):-
-nth(0,L,on),
+nth0(0,L,on),
 retractall(visited(_,_)),
 assertz(visited(0,0)),
 retractall(current(_,_,_)),
-asserts(current(0,0,rnorth)),
+retractall(stench(_,_)),
+retractall(tingle(_,_)),
+retractall(wumpus(_,_)),
+retractall(wall(_,_)),
+retractall(glitter(_,_)),
+retractall(confundus(_,_)),
+retractall(safeToVisit(_,_)),
+assertz(current(0,0,rnorth)),
+assertz(safeToVisit(0,0)),
 updateKB(L).
 
 
 safe(X,Y):-
- (\+wumpus(X,Y),\+confundus(X,Y), nextToVisited(X,Y));
+ (\+checkWumpus(X,Y),\+checkConfundus(X,Y), nextToVisited(X,Y));
  visited(X,Y).
  
 
@@ -158,7 +204,7 @@ nextToVisited(X,Y) :-
  visited(X,Yminus);
  visited(X,Yplus)).
 
-wumpus(X,Y) :-
+checkWumpus(X,Y) :-
  wumpusalive,
  \+visited(X,Y),
  Xminus is X-1,
@@ -183,7 +229,7 @@ wumpus(X,Y) :-
      (visited(X, Yplus), \+stench(X, Yplus))).
 
 
-confundus(X,Y) :-
+checkConfundus(X,Y) :-
 \+visited(X,Y),
 Xminus is X-1,
 Xplus is X+1,
@@ -201,15 +247,15 @@ Yplus is Y+1,
  Xplus is X+1,
  Yminus is Y-1,
  Yplus is Y+1,
- \+((visited(Xminus,Y),\+stench(Xminus,Y));
-     (visited(Xplus, Y), \+stench(Xplus, Y));
-     (visited(X, Yminus), \+stench(X, Yminus));
-     (visited(X, Yplus), \+stench(X, Yplus))).
+ \+((visited(Xminus,Y),\+tingle(Xminus,Y));
+     (visited(Xplus, Y), \+tingle(Xplus, Y));
+     (visited(X, Yminus), \+tingle(X, Yminus));
+     (visited(X, Yplus), \+tingle(X, Yplus))).
 
- %explorePath(X,Y,D,P) :-
+ explorePath(X,Y,D,P) :-
   X == 0,
   Y == 0,
-  \+(safeToVisit(XSafe,YSafe),\+(visitesd(XSafe,YSafe))),
+  \+((safeToVisit(XSafe,YSafe),\+(visited(XSafe,YSafe)))),
   \+glitter(G1,G2),
  P = [].
  
@@ -222,6 +268,7 @@ P = [].
  getForward(X,Y,D,X2,Y2),
  \+(visited(X2,Y2)),
  safe(X2,Y2),
+\+wall(X2,Y2),
  H = moveforward,
  explorePath(X2,Y2,D,Q).
  
@@ -229,6 +276,7 @@ P = [].
  getLeft(X,Y,D,X2,Y2),
  \+(visited(X2,Y2)),
  safe(X2,Y2),
+\+wall(X2,Y2),
  H = turnleft,
  explorePath(X,Y,D,Q).
  
@@ -236,6 +284,7 @@ P = [].
  getRight(X,Y,D,X2,Y2),
  \+(visited(X2,Y2)),
  safe(X2,Y2),
+\+wall(X2,Y2),
  H = turnright,
  explorePath(X,Y,D,Q).
 
@@ -265,6 +314,21 @@ explorePath(X,Y,D,Q).
 explore(L) :-
 current(X,Y,D),
  explorePath(X,Y,D,L).
+ 
+ 
+
+
+%change of direction
+turnLeft(rnorth,rwest).
+turnLeft(rwest,rsouth).
+turnLeft(rsouth,reast).
+turnLeft(reast,rnorth).
+turnRight(rnorth,reast).
+turnRight(rwest,rnorth).
+turnRight(rsouth,rwest).
+turnRight(reast,rsouth).
+
+
  
  
 
