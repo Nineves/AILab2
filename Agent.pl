@@ -13,14 +13,13 @@ retractall(wumpus(_,_)),
 retractall(confundus(_,_)),
 retractall(wall(_,_)),
 retractall(safeToVisit(_,_)),
-assertz(current(0,0,rnorth)),
-assertz(wumpusalive).
+assertz(current(0,0,rnorth)).
 
 
 % implement Agent’s reasoning response to executing action A and receiving sensory input L.
 
 :- dynamic hasarrow/0.
-:- dynamic wumpusalive/0.
+:- dynamic wumpusdead/0.
 :- dynamic coins/0.
 :- dynamic visited/2.
 :- dynamic safe/2.
@@ -45,7 +44,7 @@ member(V,[shoot,moveforward,turnleft,turnright,pickup]).
 
 move(A,L) :-
 
-(A == shoot, hasarrow, nth0(5,L,on), retractall(hasarrow),retractall(wumpusalive));
+(A == shoot, hasarrow, nth0(5,L,on), retractall(hasarrow),retractall(wumpusdead), assertz(wumpusdead));
 (A == shoot, hasarrow, nth0(5,L,off), retractall(hasarrow));
 (A == moveforward, nth0(0,L,on), reposition(L));
 (A == moveforward, nth0(4,L,off), current(X,Y,D), forward(X,Y,D), updateKB(L));
@@ -81,7 +80,7 @@ nth0(2,L,on)-> (current(X,Y,D), assertz(tingle(X,Y)));
 nth0(2,L,off).
 
 updateW(L) :-
-nth0(5,L,on)-> retractall(wumpusalive);
+nth0(5,L,on)-> assertz(wumpusdead(X,Y));
 nth0(5,L,off).
 
 updateG(L) :-
@@ -124,13 +123,13 @@ Xplus is X+1,
 Yminus is Y-1,
 Yplus is Y+1,
 retractall(confundus(Xminus,Y)),
-retractall(wumpus(Xplus,Y)),
-retractall(wumpus(X,Yminus)),
-retractall(wumpus(X,Yplus)),
-(checkWumpus(Xminus,Y) -> assertz(wumpus(Xminus,Y)); true),
-(checkWumpus(Xplus,Y) -> assertz(wumpus(Xplus,Y)); true),
-(checkWumpus(X,Yminus) -> assertz(wumpus(X,Yminus)); true),
-(checkWumpus(X,Yplus) -> assertz(swumpus(X,Yplus)); true).
+retractall(confundus(Xplus,Y)),
+retractall(confundus(X,Yminus)),
+retractall(confundus(X,Yplus)),
+(checkConfundus(Xminus,Y) -> assertz(confundus(Xminus,Y)); true),
+(checkConfundus(Xplus,Y) -> assertz(confundus(Xplus,Y)); true),
+(checkConfundus(X,Yminus) -> assertz(confundus(X,Yminus)); true),
+(checkConfundus(X,Yplus) -> assertz(confundus(X,Yplus)); true).
 
 getForward(X,Y,D,X2,Y2) :-
  
@@ -205,7 +204,7 @@ nextToVisited(X,Y) :-
  visited(X,Yplus)).
 
 checkWumpus(X,Y) :-
- wumpusalive,
+ \+wumpusdead,
  \+visited(X,Y),
  Xminus is X-1,
  Xplus is X+1,
@@ -314,21 +313,6 @@ explorePath(X,Y,D,Q).
 explore(L) :-
 current(X,Y,D),
  explorePath(X,Y,D,L).
- 
- 
-
-
-%change of direction
-turnLeft(rnorth,rwest).
-turnLeft(rwest,rsouth).
-turnLeft(rsouth,reast).
-turnLeft(reast,rnorth).
-turnRight(rnorth,reast).
-turnRight(rwest,rnorth).
-turnRight(rsouth,rwest).
-turnRight(reast,rsouth).
-
-
  
  
 
