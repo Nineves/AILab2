@@ -274,9 +274,10 @@ if __name__ == '__main__':
     # Explore action
     while True:
         # Query prolog knowledge base
-        action = prolog.query("explore(L)")
-        time.sleep(100000)
-        print(action)
+        action = prolog.query('explore(L)')
+        time.sleep(2)
+        for i in action:
+            print(i)
         # get agent's current direction
         dir = agentPos["dir"]
         x = agentPos["x"]
