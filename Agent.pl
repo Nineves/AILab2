@@ -19,6 +19,7 @@ assertz(current(0,0,rnorth)).
 % implement Agent’s reasoning response to executing action A and receiving sensory input L.
 
 :- dynamic hasarrow/0.
+:- dynamic noarrow/0.
 :- dynamic wumpusdead/0.
 :- dynamic coins/0.
 :- dynamic visited/2.
@@ -44,8 +45,8 @@ member(V,[shoot,moveforward,turnleft,turnright,pickup]).
 
 move(A,L) :-
 
-(A == shoot, hasarrow, nth0(5,L,on), retractall(hasarrow),retractall(wumpusdead), assertz(wumpusdead));
-(A == shoot, hasarrow, nth0(5,L,off), retractall(hasarrow));
+(A == shoot, hasarrow, nth0(5,L,on), retractall(hasarrow),retractall(wumpusdead), assertz(wumpusdead), assertz(noarrow));
+(A == shoot, hasarrow, nth0(5,L,off), retractall(hasarrow), assertz(noarrow));
 (A == moveforward, nth0(0,L,on), reposition(L));
 (A == moveforward, nth0(4,L,off), current(X,Y,D), forward(X,Y,D), updateKB(L));
 (A == moveforward, nth0(4,L,on),current(X,Y,D), getForward(X,Y,D,X2,Y2), assertz(wall(X2,Y2)));
@@ -185,6 +186,7 @@ retractall(confundus(_,_)),
 retractall(safeToVisit(_,_)),
 assertz(current(0,0,rnorth)),
 assertz(safeToVisit(0,0)),
+((\+noarrow, assertz(hasarrow)); true),
 updateKB(L).
 
 
@@ -277,7 +279,8 @@ P = [].
  safe(X2,Y2),
 \+wall(X2,Y2),
  H = turnleft,
- explorePath(X,Y,D,Q).
+turnLeft(D,NewD),
+ explorePath(X,Y,NewD,Q).
  
  explorePath(X,Y,D,[H|Q]) :-
  getRight(X,Y,D,X2,Y2),
@@ -285,7 +288,8 @@ P = [].
  safe(X2,Y2),
 \+wall(X2,Y2),
  H = turnright,
- explorePath(X,Y,D,Q).
+turnRight(D,NewD),
+ explorePath(X,Y,NewD,Q).
 
  explorePath(X,Y,D,[H|Q]) :-
   getForward(X,Y,D,X2,Y2),
@@ -297,21 +301,28 @@ explorePath(X2,Y2,D,Q).
   getLeft(X,Y,D,X2,Y2),
 visited(X2,Y2),
 H = turnleft,
-explorePath(X,Y,D,Q).
+turnLeft(D,NewD),
+explorePath(X,Y,NewD,Q).
 
  explorePath(X,Y,D,[H|Q]) :-
   getRight(X,Y,D,X2,Y2),
 visited(X2,Y2),
 H = turnright,
-explorePath(X,Y,D,Q).
+turnRight(D,NewD),
+explorePath(X,Y,NewD,Q).
  
 %The agent needs to turn back
 explorePath(X,Y,D,[H|Q]) :-
+getForward(X,Y,D,X2,Y2),
+\+visited(X2,Y2),
+\+safe(X2,Y2),
 H = turnright,
-explorePath(X,Y,D,Q).
+turnRight(D,NewD),
+explorePath(X,Y,NewD,Q).
  
 explore(L) :-
 current(X,Y,D),
+
  explorePath(X,Y,D,L).
  
  
@@ -326,3 +337,4 @@ turnRight(rnorth,reast).
 turnRight(rwest,rnorth).
 turnRight(rsouth,rwest).
 turnRight(reast,rsouth).
+
