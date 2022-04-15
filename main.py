@@ -3,10 +3,7 @@
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
-from nis import match
-from unittest import case
-from pyswip import Prolog
-import time
+from pyswip import *
 
 
 # 3x3 Map Cell
@@ -35,9 +32,17 @@ import time
 rows = 6
 cols = 7
 
+rrows = (rows*2) - 1
+rcols = (cols*2) -1
+rMapCell = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
+
 mapCell = [".", ".", ".", " ", "?", " ", ".", ".", "."]
 wall = ["#", "#", "#", "#", "#", "#", "#", "#", "#"]
 absoluteMap = []
+relativeMap = []
+
+actionSequence = []
+
 
 # Co-ordinates to absoluteMap index
 dictionary = {
@@ -63,10 +68,168 @@ dictionary = {
     (5, 1): 33
 }
 
+rdictionary = {
+    (0,10): 0,
+    (1,10): 1,
+    (2,10): 2,
+    (3,10): 3,
+    (4,10): 4,
+    (5,10): 5,
+    (6,10): 6,
+    (7,10): 7,
+    (8,10): 8,
+    (9,10): 9,
+    (10,10): 10,
+    (11,10): 11,
+    (12,10): 12,
+    (0,9): 13,
+    (1,9): 14,
+    (2,9): 15,
+    (3,9): 16,
+    (4,9): 17,
+    (5,9): 18,
+    (6,9): 19,
+    (7,9): 20,
+    (8,9): 21,
+    (9,9): 22,
+    (10,9): 23,
+    (11,9): 24,
+    (12,9): 25,
+    (0,8): 26,
+    (1,8): 27,
+    (2,8): 28,
+    (3,8): 29,
+    (4,8): 30,
+    (5,8): 31,
+    (6,8): 32,
+    (7,8): 33,
+    (8,8): 34,
+    (9,8): 35,
+    (10,8): 36,
+    (11,8): 37,
+    (12,8): 38,
+    (0,7): 39,
+    (1,7): 40,
+    (2,7): 41,
+    (3,7): 42,
+    (4,7): 43,
+    (5,7): 44,
+    (6,7): 45,
+    (7,7): 46,
+    (8,7): 47,
+    (9,7): 48,
+    (10,7): 49,
+    (11,7): 50,
+    (12,7): 51,
+    (0,6): 52,
+    (1,6): 53,
+    (2,6): 54,
+    (3,6): 55,
+    (4,6): 56,
+    (5,6): 57,
+    (6,6): 58,
+    (7,6): 59,
+    (8,6): 60,
+    (9,6): 61,
+    (10,6): 62,
+    (11,6): 63,
+    (12,6): 64,
+    (0,5): 65,
+    (1,5): 66,
+    (2,5): 67,
+    (3,5): 68,
+    (4,5): 69,
+    (5,5): 70,
+    (6,5): 71,
+    (7,5): 72,
+    (8,5): 73,
+    (9,5): 74,
+    (10,5): 75,
+    (11,5): 76,
+    (12,5): 77,
+    (0,4): 78,
+    (1,4): 79,
+    (2,4): 80,
+    (3,4): 81,
+    (4,4): 82,
+    (5,4): 83,
+    (6,4): 84,
+    (7,4): 85,
+    (8,4): 86,
+    (9,4): 87,
+    (10,4): 88,
+    (11,4): 89,
+    (12,4): 90,
+    (0,3): 91,
+    (1,3): 92,
+    (2,3): 93,
+    (3,3): 94,
+    (4,3): 95,
+    (5,3): 96,
+    (6,3): 97,
+    (7,3): 98,
+    (8,3): 99,
+    (9,3): 100,
+    (10,3): 101,
+    (11,3): 102,
+    (12,3): 103,
+    (0,2): 104,
+    (1,2): 105,
+    (2,2): 106,
+    (3,2): 107,
+    (4,2): 108,
+    (5,2): 109,
+    (6,2): 110,
+    (7,2): 111,
+    (8,2): 112,
+    (9,2): 113,
+    (10,2): 114,
+    (11,2): 115,
+    (12,2): 116,
+    (0,1): 117,
+    (1,1): 118,
+    (2,1): 119,
+    (3,1): 120,
+    (4,1): 121,
+    (5,1): 122,
+    (6,1): 123,
+    (7,1): 124,
+    (8,1): 125,
+    (9,1): 126,
+    (10,1): 127,
+    (11,1): 128,
+    (12,1): 129,
+    (0,0): 130,
+    (1,0): 131,
+    (2,0): 132,
+    (3,0): 133,
+    (4,0): 134,
+    (5,0): 135,
+    (6,0): 136,
+    (7,0): 137,
+    (8,0): 138,
+    (9,0): 139,
+    (10,0): 140,
+    (11,0): 141,
+    (12,0): 142
+}
+
+def get_key(val):
+    for key, value in dictionary.items():
+         if val == value:
+             return key
+ 
+    return "key doesn't exist"
+
+xOffset = 6
+yOffset = 5
+
 # agent's position
 agentPos = {
     
+    
 }
+
 
 # update agent's position
 def updateAgent(x, y, dir):
@@ -83,60 +246,136 @@ def resetAgent():
 # 0, 1, 2, 6, 7, 8
 def getPercepts(List):
     L = []
-    for i in List:
-        if i != ".":
-            L.append("on")
-        else:
-            L.append("off")
+
+    # Confounded
+    if List[0] != ".":
+        L.append("on")
+    else:
+        L.append("off")
+
+    # Stench
+    if List[1] != ".":
+        L.append("on")
+    else:
+        L.append("off")
+    
+    # Tingle
+    if List[2] != ".":
+        L.append("on")
+    else:
+        L.append("off")
+
+    # Glitter
+    if List[6] != ".":
+        L.append("on")
+    else:
+        L.append("off")
+
+    # Bump
+    if List[7] != ".":
+        L.append("on")
+    else:
+        L.append("off")
+
+    # Scream
+    if List[8] != ".":
+        L.append("on")
+    else:
+        L.append("off")
+
     return L
 
 
 
 # Create Map
-def createMap():
-    for i in range(rows):
-        for j in range(cols):
-            if i == 0:
-                absoluteMap.append(wall.copy())
-            elif i == rows - 1:
-                absoluteMap.append(wall.copy())
-            elif 0 < i < rows - 1:
-                if j == 0:
+def createMap(mapType):
+    if mapType == "absolute":
+        for i in range(rows):
+            for j in range(cols):
+                if i == 0:
                     absoluteMap.append(wall.copy())
-                elif j == cols - 1:
+                elif i == rows - 1:
                     absoluteMap.append(wall.copy())
-                else:
-                    absoluteMap.append(mapCell.copy())
+                elif 0 < i < rows - 1:
+                    if j == 0:
+                        absoluteMap.append(wall.copy())
+                    elif j == cols - 1:
+                        absoluteMap.append(wall.copy())
+                    else:
+                        absoluteMap.append(mapCell.copy())
+        for cells in absoluteMap:
+            if cells[4] != "W" or cells[4] != "O":
+                cells[4] = "s"
+    elif mapType == "relative":
+        for i in range(rrows):
+            for j in range(rcols):
+                relativeMap.append(rMapCell.copy())
 
 
-def printMap():
-    print("===========================================================")
-    current = cols
-    prev = 0
-    total = rows * cols
-    while total > 0:
-        for i in range(prev, current, 1):
-            for j in range(0, 3, 1):
-                print(absoluteMap[i][j], end=" ")
-            print(" ", end=" ")
+def printMap(mapType):
+    if mapType=="absolute":
+        print("============================================================")
+        print("========================ABSOLUTE MAP========================")
         print()
-        for i in range(prev, current, 1):
-            for j in range(3, 6, 1):
-                print(absoluteMap[i][j], end=" ")
-            print(" ", end=" ")
-        print()
-        for i in range(prev, current, 1):
-            for j in range(6, 9, 1):
-                print(absoluteMap[i][j], end=" ")
-            print(" ", end=" ")
+        print(actionSequence)
+        current = cols
+        prev = 0
+        total = rows * cols
+        while total > 0:
+            for i in range(prev, current, 1):
+                for j in range(0, 3, 1):
+                    print(absoluteMap[i][j], end=" ")
+                print(" ", end=" ")
+            print()
+            for i in range(prev, current, 1):
+                for j in range(3, 6, 1):
+                    print(absoluteMap[i][j], end=" ")
+                print(" ", end=" ")
+            print()
+            for i in range(prev, current, 1):
+                for j in range(6, 9, 1):
+                    print(absoluteMap[i][j], end=" ")
+                print(" ", end=" ")
 
-        print()
-        print()
+            print()
+            print()
 
-        prev = current
-        current = current + cols
-        total = total - cols
-    print("===========================================================")
+            prev = current
+            current = current + cols
+            total = total - cols
+        print("============================================================")
+
+    elif mapType=="relative":
+        print("============================================================")
+        print("========================RELATIVE MAP========================")
+        print()
+        print(actionSequence)
+        current = rcols
+        prev = 0
+        total = rrows * rcols
+        while total > 0:
+            for i in range(prev, current, 1):
+                for j in range(0, 3, 1):
+                    print(relativeMap[i][j], end=" ")
+                print(" ", end=" ")
+            print()
+            for i in range(prev, current, 1):
+                for j in range(3, 6, 1):
+                    print(relativeMap[i][j], end=" ")
+                print(" ", end=" ")
+            print()
+            for i in range(prev, current, 1):
+                for j in range(6, 9, 1):
+                    print(relativeMap[i][j], end=" ")
+                print(" ", end=" ")
+
+            print()
+            print()
+
+            prev = current
+            current = current + rcols
+            total = total - rcols
+        print("============================================================")
 
 
 # populate portal, wumpus, coin
@@ -248,6 +487,13 @@ def agentOn(x, y, dir):
     agentPos["x"] = x
     agentPos["y"] = y
     agentPos["dir"] = dir
+    agentPos["rX"] = 0
+    agentPos["rY"] = 0
+    agentPos["rDir"] = "North"
+
+    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = "-"
+    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
+    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = "-"
 
 def initialize():
     createMap()
@@ -261,29 +507,23 @@ def initialize():
     agentOn(1, 1, "North")
     printMap()
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
+def firstTestCase():
     prolog = Prolog()
     prolog.consult("Agent.pl")
 
-    # Initialize the map with Wumpus, Portals, Coin and Agent
-    initialize()
-
-
-
-    # Explore action
-    while True:
-        # Query prolog knowledge base
-        action = prolog.query('explore(L)')
-        time.sleep(2)
-        for i in action:
-            print(i)
+    action = ["moveforward", "moveforward", "moveforward", "turnRight", "moveforward", "moveforward", "turnRight", "moveforward", "moveforward", "moveforward"]
+    # Create Empty Map
+    createMap("absolute")
+    createMap("relative")
+    # Initialize Agent
+    agentOn(1,1, "North")
+    
+    for i in action:
         # get agent's current direction
         dir = agentPos["dir"]
         x = agentPos["x"]
         y = agentPos["y"]
-
-        if action == "moveforward":
+        if i == "moveforward":
             if dir == "North":
                 # Update map
                 index = dictionary.get((x, y))
@@ -293,53 +533,67 @@ if __name__ == '__main__':
 
                 index = dictionary.get((x, y+1))
                 if index:
-                    # Update agent's position
-                    updateAgent(x, y+1, "North")
-                    # Update map
-                    absoluteMap[index][3] = "-"
-                    absoluteMap[index][4] = "^"
-                    absoluteMap[index][5] = "-"
                     # Update Prolog's knowledge base
                     L = getPercepts(absoluteMap[index])
                     # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
+                    prolog.query("move({}, {})".format(i, L))
+
+                    # Confounded
+                    # Teleport Agent to 1,1,"North"
+                    if absoluteMap[index][4] == "O":
+                        # Update map
+                        absoluteMap[index][3] = " "
+                        absoluteMap[index][4] = "O"
+                        absoluteMap[index][5] = " "
+                        # Reposition Agent in Absolute Map
+                        for j in range(len(absoluteMap)):
+                            if absoluteMap[j][4] == "S":
+                                k = get_key(j)
+                                agentOn(k[0], k[1], "North")
+                        # Tell Agent to reposition
+                        L = getPercepts(absoluteMap[dictionary.get((1,1))])
+                        prolog.query("reposition({})".format(L))
+
+                    # Wumpus
+                    elif absoluteMap[index][4] == "W":
+                        print("DEAD")
+                        # reborn
+                        prolog.query("reborn")
+                        break;
+
                     # Pick up coin if available
                     if L[3] == "on":
-                        prolog.assertz("move({}, {})".format("pickup", L))
-                        # pickup
+                        # tell agent to pickup
+                        prolog.query("move({}, {})".format("pickup", L))
                         # Turn off Glitter
-                        index = dictionary.get((x, y))
                         absoluteMap[index][6] = "."
-                        # Update Prolog's knowledge base
-                        L = getPercepts(absoluteMap[index])
-                        # Prolog's move(A,L)
-                        prolog.assertz("move({}, {})".format(action, L))
+                    
+                    # Update Agent's Co-ordinates
+                    updateAgent(x, y+1, dir)
+                    actionSequence.append(i)
+                    # Update Absolute Map
+                    absoluteMap[index][3] = "-"
+                    absoluteMap[index][4] = "^"
+                    absoluteMap[index][5] = "-"
+                    
                 else:
                     # BUMPED INTO WALL
+                    # Turn on bump indicator, print map, turn off bump indicator
+                    absoluteMap[index][7] = "B"
+                    printMap("absolute")
+                    print()
+                    printMap("relative")
+                    absoluteMap[index][7] = "."
                     # Revert Map
-                    index = dictionary.get((x, y))
+                    index = dictionary.get((agentPos["x"], agentPos["y"]))
                     absoluteMap[index][3] = "-"
                     absoluteMap[index][4] = "^"
                     absoluteMap[index][5] = "-"
-                    # Set bump indicator ON
-                    absoluteMap[index][7] = "B"
+                    
                     # Update Prolog's knowledge base
-                    L = getPercepts(absoluteMap[index])
+                    L = ["off", "off", "off", "off", "on", "off"]
                     # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
-                    # Pick up coin if available
-                    if L[3] == "on":
-                        prolog.assertz("move({}, {})".format("pickup", L))
-                        # pickup
-                        # Turn off Glitter
-                        index = dictionary.get((x, y))
-                        absoluteMap[index][6] = "."
-                        # Update Prolog's knowledge base
-                        L = getPercepts(absoluteMap[index])
-                        # Prolog's move(A,L)
-                        prolog.assertz("move({}, {})".format(action, L))
-                    # Set bump indicator OFF
-                    absoluteMap[index][7] = "."
+                    prolog.query("move({}, {})".format(i, L))
                 
             elif dir == "East":
                 # Update map
@@ -350,53 +604,66 @@ if __name__ == '__main__':
 
                 index = dictionary.get((x+1, y))
                 if index:
-                    # Update agent's position
-                    updateAgent(x+1, y, "East")
-                    # Update map
-                    absoluteMap[index][3] = "-"
-                    absoluteMap[index][4] = ">"
-                    absoluteMap[index][5] = "-"
                     # Update Prolog's knowledge base
                     L = getPercepts(absoluteMap[index])
                     # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
+                    prolog.query("move({}, {})".format(i, L))
+
+                    # Confounded
+                    # Teleport Agent to 1,1,"North"
+                    if absoluteMap[index][4] == "O":
+                        # Update map
+                        absoluteMap[index][3] = " "
+                        absoluteMap[index][4] = "O"
+                        absoluteMap[index][5] = " "
+                        # Reposition Agent in Absolute Map
+                        for j in range(len(absoluteMap)):
+                            if absoluteMap[j][4] == "S":
+                                k = get_key(j)
+                                agentOn(k[0], k[1], "North")
+                        # Tell Agent to reposition
+                        L = getPercepts(absoluteMap[dictionary.get((1,1))])
+                        prolog.query("reposition({})".format(L))
+
+                    # Wumpus
+                    elif absoluteMap[index][4] == "W":
+                        print("DEAD")
+                        # reborn
+                        prolog.query("reborn")
+                        break;
+
                     # Pick up coin if available
                     if L[3] == "on":
-                        prolog.assertz("move({}, {})".format("pickup", L))
-                        # pickup
+                        # tell agent to pickup
+                        prolog.query("move({}, {})".format("pickup", L))
                         # Turn off Glitter
-                        index = dictionary.get((x, y))
                         absoluteMap[index][6] = "."
-                        # Update Prolog's knowledge base
-                        L = getPercepts(absoluteMap[index])
-                        # Prolog's move(A,L)
-                        prolog.assertz("move({}, {})".format(action, L))
+                    
+                    # Update Agent's Co-ordinates
+                    updateAgent(x+1, y, dir)
+                    actionSequence.append(i)
+                    # Update Absolute Map
+                    absoluteMap[index][3] = "-"
+                    absoluteMap[index][4] = ">"
+                    absoluteMap[index][5] = "-"
                 else:
                     # BUMPED INTO WALL
+                    # Turn on bump indicator, print map, turn off bump indicator
+                    absoluteMap[index][7] = "B"
+                    printMap("absolute")
+                    print()
+                    printMap("relative")
+                    absoluteMap[index][7] = "."
                     # Revert Map
-                    index = dictionary.get((x, y))
+                    index = dictionary.get((agentPos["x"], agentPos["y"]))
                     absoluteMap[index][3] = "-"
                     absoluteMap[index][4] = ">"
                     absoluteMap[index][5] = "-"
-                    # Set bump indicator ON
-                    absoluteMap[index][7] = "B"
+                    
                     # Update Prolog's knowledge base
-                    L = getPercepts(absoluteMap[index])
+                    L = ["off", "off", "off", "off", "on", "off"]
                     # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
-                    # Pick up coin if available
-                    if L[3] == "on":
-                        prolog.assertz("move({}, {})".format("pickup", L))
-                        # pickup
-                        # Turn off Glitter
-                        index = dictionary.get((x, y))
-                        absoluteMap[index][6] = "."
-                        # Update Prolog's knowledge base
-                        L = getPercepts(absoluteMap[index])
-                        # Prolog's move(A,L)
-                        prolog.assertz("move({}, {})".format(action, L))
-                    # Set bump indicator OFF
-                    absoluteMap[index][7] = "."
+                    prolog.query("move({}, {})".format(i, L))
             elif dir == "South":
                 # Update map
                 index = dictionary.get((x, y))
@@ -406,53 +673,66 @@ if __name__ == '__main__':
 
                 index = dictionary.get((x, y-1))
                 if index:
-                    # Update agent's position
-                    updateAgent(x, y-1, "South")
-                    # Update map
-                    absoluteMap[index][3] = "-"
-                    absoluteMap[index][4] = "v"
-                    absoluteMap[index][5] = "-"
                     # Update Prolog's knowledge base
                     L = getPercepts(absoluteMap[index])
                     # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
+                    prolog.query("move({}, {})".format(i, L))
+
+                    # Confounded
+                    # Teleport Agent to 1,1,"North"
+                    if absoluteMap[index][4] == "O":
+                        # Update map
+                        absoluteMap[index][3] = " "
+                        absoluteMap[index][4] = "O"
+                        absoluteMap[index][5] = " "
+                        # Reposition Agent in Absolute Map
+                        for j in range(len(absoluteMap)):
+                            if absoluteMap[j][4] == "S":
+                                k = get_key(j)
+                                agentOn(k[0], k[1], "North")
+                        # Tell Agent to reposition
+                        L = getPercepts(absoluteMap[dictionary.get((1,1))])
+                        prolog.query("reposition({})".format(L))
+
+                    # Wumpus
+                    elif absoluteMap[index][4] == "W":
+                        print("DEAD")
+                        # reborn
+                        prolog.query("reborn")
+                        break;
+
                     # Pick up coin if available
                     if L[3] == "on":
-                        prolog.assertz("move({}, {})".format("pickup", L))
-                        # pickup
+                        # tell agent to pickup
+                        prolog.query("move({}, {})".format("pickup", L))
                         # Turn off Glitter
-                        index = dictionary.get((x, y))
                         absoluteMap[index][6] = "."
-                        # Update Prolog's knowledge base
-                        L = getPercepts(absoluteMap[index])
-                        # Prolog's move(A,L)
-                        prolog.assertz("move({}, {})".format(action, L))
+                    
+                    # Update Agent's Co-ordinates
+                    updateAgent(x, y-1, dir)
+                    actionSequence.append(i)
+                    # Update Absolute Map
+                    absoluteMap[index][3] = "-"
+                    absoluteMap[index][4] = "v"
+                    absoluteMap[index][5] = "-"
                 else:
                     # BUMPED INTO WALL
+                    # Turn on bump indicator, print map, turn off bump indicator
+                    absoluteMap[index][7] = "B"
+                    printMap("absolute")
+                    print()
+                    printMap("relative")
+                    absoluteMap[index][7] = "."
                     # Revert Map
-                    index = dictionary.get((x, y))
+                    index = dictionary.get((agentPos["x"], agentPos["y"]))
                     absoluteMap[index][3] = "-"
                     absoluteMap[index][4] = "v"
                     absoluteMap[index][5] = "-"
-                    # Set bump indicator ON
-                    absoluteMap[index][7] = "B"
+                    
                     # Update Prolog's knowledge base
-                    L = getPercepts(absoluteMap[index])
+                    L = ["off", "off", "off", "off", "on", "off"]
                     # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
-                    # Pick up coin if available
-                    if L[3] == "on":
-                        prolog.assertz("move({}, {})".format("pickup", L))
-                        # pickup
-                        # Turn off Glitter
-                        index = dictionary.get((x, y))
-                        absoluteMap[index][6] = "."
-                        # Update Prolog's knowledge base
-                        L = getPercepts(absoluteMap[index])
-                        # Prolog's move(A,L)
-                        prolog.assertz("move({}, {})".format(action, L))
-                    # Set bump indicator OFF
-                    absoluteMap[index][7] = "."
+                    prolog.query("move({}, {})".format(i, L))
             elif dir == "West":
                 # Update map
                 index = dictionary.get((x, y))
@@ -462,211 +742,185 @@ if __name__ == '__main__':
 
                 index = dictionary.get((x-1, y))
                 if index:
-                    # Update agent's position
-                    updateAgent(x-1, y, "West")
-                    # Update map
+                    # Update Prolog's knowledge base
+                    L = getPercepts(absoluteMap[index])
+                    # Prolog's move(A,L)
+                    prolog.query("move({}, {})".format(i, L))
+
+                    # Confounded
+                    # Teleport Agent to 1,1,"North"
+                    if absoluteMap[index][4] == "O":
+                        # Update map
+                        absoluteMap[index][3] = " "
+                        absoluteMap[index][4] = "O"
+                        absoluteMap[index][5] = " "
+                        # Reposition Agent in Absolute Map
+                        for j in range(len(absoluteMap)):
+                            if absoluteMap[j][4] == "S":
+                                k = get_key(j)
+                                agentOn(k[0], k[1], "North")
+                        # Tell Agent to reposition
+                        L = getPercepts(absoluteMap[dictionary.get((1,1))])
+                        prolog.query("reposition({})".format(L))
+
+                    # Wumpus
+                    elif absoluteMap[index][4] == "W":
+                        print("DEAD")
+                        # reborn
+                        prolog.query("reborn")
+                        break;
+
+                    # Pick up coin if available
+                    if L[3] == "on":
+                        # tell agent to pickup
+                        prolog.query("move({}, {})".format("pickup", L))
+                        # Turn off Glitter
+                        absoluteMap[index][6] = "."
+                    
+                    # Update Agent's Co-ordinates
+                    updateAgent(x-1, y, dir)
+                    actionSequence.append(i)
+                    # Update Absolute Map
                     absoluteMap[index][3] = "-"
                     absoluteMap[index][4] = "<"
                     absoluteMap[index][5] = "-"
-                    # Update Prolog's knowledge base
-                    L = getPercepts(absoluteMap[index])
-                    # Pick up coin if available
-                    if L[3] == "on":
-                        prolog.assertz("move({}, {})".format("pickup", L))
-                        # pickup
-                        # Turn off Glitter
-                        index = dictionary.get((x, y))
-                        absoluteMap[index][6] = "."
-                        # Update Prolog's knowledge base
-                        L = getPercepts(absoluteMap[index])
-                        # Prolog's move(A,L)
-                        prolog.assertz("move({}, {})".format(action, L))
-                    # Prolog's move(A,L)
                 else:
                     # BUMPED INTO WALL
+                    # Turn on bump indicator, print map, turn off bump indicator
+                    absoluteMap[index][7] = "B"
+                    printMap("absolute")
+                    print()
+                    printMap("relative")
+                    absoluteMap[index][7] = "."
                     # Revert Map
-                    index = dictionary.get((x, y))
+                    index = dictionary.get((agentPos["x"], agentPos["y"]))
                     absoluteMap[index][3] = "-"
                     absoluteMap[index][4] = "<"
                     absoluteMap[index][5] = "-"
-                    # Set bump indicator ON
-                    absoluteMap[index][7] = "B"
+                    
                     # Update Prolog's knowledge base
-                    L = getPercepts(absoluteMap[index])
+                    L = ["off", "off", "off", "off", "on", "off"]
                     # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
-                    # Pick up coin if available
-                    if L[3] == "on":
-                        prolog.assertz("move({}, {})".format("pickup", L))
-                        # pickup
-                        # Turn off Glitter
-                        index = dictionary.get((x, y))
-                        absoluteMap[index][6] = "."
-                        # Update Prolog's knowledge base
-                        L = getPercepts(absoluteMap[index])
-                        # Prolog's move(A,L)
-                        prolog.assertz("move({}, {})".format(action, L))
-                    # Set bump indicator OFF
-                    absoluteMap[index][7] = "."
-        elif action == "turnLeft":
+                    prolog.query("move({}, {})".format(i, L))
+        elif i == "turnLeft":
             if dir == "North":
                 # Update Map
                 index = dictionary.get((x, y))
                 absoluteMap[index][4] = "<"
                 updateAgent(x, y, "West")
+                actionSequence.append(i)
                 # Update Prolog's knowledge base
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
-                prolog.assertz("move({}, {})".format(action, L))
-                # Pick up coin if available
-                if L[3] == "on":
-                    prolog.assertz("move({}, {})".format("pickup", L))
-                    # pickup
-                    # Turn off Glitter
-                    index = dictionary.get((x, y))
-                    absoluteMap[index][6] = "."
-                    # Update Prolog's knowledge base
-                    L = getPercepts(absoluteMap[index])
-                    # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
+                prolog.query("move({}, {})".format(i, L))
                 
+                printMap("absolute")
+                print()
+                printMap("relative")
             elif dir == "East":
                 # Update Map
                 index = dictionary.get((x, y))
                 absoluteMap[index][4] = "^"
                 updateAgent(x, y, "North")
+                actionSequence.append(i)
                 # Update Prolog's knowledge base
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
-                prolog.assertz("move({}, {})".format(action, L))
-                # Pick up coin if available
-                if L[3] == "on":
-                    prolog.assertz("move({}, {})".format("pickup", L))
-                    # pickup
-                    # Turn off Glitter
-                    index = dictionary.get((x, y))
-                    absoluteMap[index][6] = "."
-                    # Update Prolog's knowledge base
-                    L = getPercepts(absoluteMap[index])
-                    # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
+                prolog.query("move({}, {})".format(i, L))
+                
+                printMap("absolute")
+                print()
+                printMap("relative")
             elif dir == "South":
                 # Update Map
                 index = dictionary.get((x, y))
                 absoluteMap[index][4] = ">"
                 updateAgent(x, y, "East")
+                actionSequence.append(i)
                 # Update Prolog's knowledge base
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
-                prolog.assertz("move({}, {})".format(action, L))
-                if L[3] == "on":
-                    prolog.assertz("move({}, {})".format("pickup", L))
-                    # pickup
-                    # Turn off Glitter
-                    index = dictionary.get((x, y))
-                    absoluteMap[index][6] = "."
-                    # Update Prolog's knowledge base
-                    L = getPercepts(absoluteMap[index])
-                    # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
+                prolog.query("move({}, {})".format(i, L))
+                
+                printMap("absolute")
+                print()
+                printMap("relative")
             elif dir == "West":
                 # Update Map
                 index = dictionary.get((x, y))
                 absoluteMap[index][4] = "v"
                 updateAgent(x, y, "South")
+                actionSequence.append(i)
                 # Update Prolog's knowledge base
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
-                prolog.assertz("move({}, {})".format(action, L))
-                # pickup
-                # Turn off Glitter
-                index = dictionary.get((x, y))
-                absoluteMap[index][6] = "."
-                # Update Prolog's knowledge base
-                L = getPercepts(absoluteMap[index])
-                # Prolog's move(A,L)
-                prolog.assertz("move({}, {})".format(action, L))
+                prolog.query("move({}, {})".format(i, L))
+                
+                printMap("absolute")
+                print()
+                printMap("relative")
 
-        elif action == "turnRight":
+        elif i == "turnRight":
             if dir == "North":
                 # Update Map
                 index = dictionary.get((x, y))
                 absoluteMap[index][4] = ">"
                 updateAgent(x, y, "East")
+                actionSequence.append(i)
                 # Update Prolog's knowledge base
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
-                prolog.assertz("move({}, {})".format(action, L))
-                if L[3] == "on":
-                    prolog.assertz("move({}, {})".format("pickup", L))
-                    # pickup
-                    # Turn off Glitter
-                    index = dictionary.get((x, y))
-                    absoluteMap[index][6] = "."
-                    # Update Prolog's knowledge base
-                    L = getPercepts(absoluteMap[index])
-                    # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
+                prolog.query("move({}, {})".format(i, L))
+
+                printMap("absolute")
+                print()
+                printMap("relative")
             elif dir == "East":
                 # Update Map
                 index = dictionary.get((x, y))
                 absoluteMap[index][4] = "v"
                 updateAgent(x, y, "South")
+                actionSequence.append(i)
                 # Update Prolog's knowledge base
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
-                prolog.assertz("move({}, {})".format(action, L))
-                if L[3] == "on":
-                    prolog.assertz("move({}, {})".format("pickup", L))
-                    # pickup
-                    # Turn off Glitter
-                    index = dictionary.get((x, y))
-                    absoluteMap[index][6] = "."
-                    # Update Prolog's knowledge base
-                    L = getPercepts(absoluteMap[index])
-                    # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
+                prolog.query("move({}, {})".format(i, L))
+                
+                printMap("absolute")
+                print()
+                printMap("relative")
             elif dir == "South":
                 # Update Map
                 index = dictionary.get((x, y))
                 absoluteMap[index][4] = "<"
                 updateAgent(x, y, "West")
+                actionSequence.append(i)
                 # Update Prolog's knowledge base
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
-                prolog.assertz("move({}, {})".format(action, L))
-                if L[3] == "on":
-                    prolog.assertz("move({}, {})".format("pickup", L))
-                    # pickup
-                    # Turn off Glitter
-                    index = dictionary.get((x, y))
-                    absoluteMap[index][6] = "."
-                    # Update Prolog's knowledge base
-                    L = getPercepts(absoluteMap[index])
-                    # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
+                prolog.query("move({}, {})".format(i, L))
+                
+                printMap("absolute")
+                print()
+                printMap("relative")
             elif dir == "West":
                 # Update Map
                 index = dictionary.get((x, y))
                 absoluteMap[index][4] = "^"
                 updateAgent(x, y, "North")
+                actionSequence.append(i)
                 # Update Prolog's knowledge base
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
-                prolog.assertz("move({}, {})".format(action, L))
-                if L[3] == "on":
-                    prolog.assertz("move({}, {})".format("pickup", L))
-                    # pickup
-                    # Turn off Glitter
-                    index = dictionary.get((x, y))
-                    absoluteMap[index][6] = "."
-                    # Update Prolog's knowledge base
-                    L = getPercepts(absoluteMap[index])
-                    # Prolog's move(A,L)
-                    prolog.assertz("move({}, {})".format(action, L))
+                prolog.query("move({}, {})".format(i, L))
+                
+                printMap("absolute")
+                print()
+                printMap("relative")
             
-        elif action == "shoot":
+        elif i == "shoot":
             index = dictionary.get((x, y))
+            actionSequence.append(i)
             if dir == "North":
                 tempIndex = 1
                 tempY = y
@@ -678,12 +932,18 @@ if __name__ == '__main__':
                         if absoluteMap[tempIndex][4] == "W":
                             # Scream Indicator On
                             absoluteMap[index][8] = "@"
+                            printMap("absolute")
+                            print()
+                            printMap("relative")
                             # Update Prolog's knowledge base
                             L = getPercepts(absoluteMap[index])
                             # Prolog's move(A,L)
-                            prolog.assertz("move({}, {})".format(action, L))
+                            prolog.query("move({}, {})".format(i, L))
                             # Scream Indicator Off
                             absoluteMap[index][8] = "."
+                            printMap("absolute")
+                            print()
+                            printMap("relative")
 
             elif dir == "East":
                 tempIndex = 1
@@ -696,12 +956,18 @@ if __name__ == '__main__':
                         if absoluteMap[tempIndex][4] == "W":
                             # Scream Indicator On
                             absoluteMap[index][8] = "@"
+                            printMap("absolute")
+                            print()
+                            printMap("relative")
                             # Update Prolog's knowledge base
                             L = getPercepts(absoluteMap[index])
                             # Prolog's move(A,L)
-                            prolog.assertz("move({}, {})".format(action, L))
+                            prolog.query("move({}, {})".format(i, L))
                             # Scream Indicator Off
                             absoluteMap[index][8] = "."
+                            printMap("absolute")
+                            print()
+                            printMap("relative")
             elif dir == "South":
                 tempIndex = 1
                 tempY = y
@@ -713,11 +979,18 @@ if __name__ == '__main__':
                         if absoluteMap[tempIndex][4] == "W":
                             # Scream Indicator On
                             absoluteMap[index][8] = "@"
+                            printMap("absolute")
+                            print()
+                            printMap("relative")
                             # Update Prolog's knowledge base
                             L = getPercepts(absoluteMap[index])
                             # Prolog's move(A,L)
+                            prolog.query("move({}, {})".format(i, L))
                             # Scream Indicator Off
                             absoluteMap[index][8] = "."
+                            printMap("absolute")
+                            print()
+                            printMap("relative")
             elif dir == "West":
                 tempIndex = 1
                 tempX = x
@@ -729,19 +1002,48 @@ if __name__ == '__main__':
                         if absoluteMap[tempIndex][4] == "W":
                             # Scream Indicator On
                             absoluteMap[index][8] = "@"
+                            printMap("absolute")
+                            print()
+                            printMap("relative")
                             # Update Prolog's knowledge base
                             L = getPercepts(absoluteMap[index])
                             # Prolog's move(A,L)
-                            prolog.assertz("move({}, {})".format(action, L))
+                            prolog.query("move({}, {})".format(i, L))
                             # Scream Indicator Off
                             absoluteMap[index][8] = "."
+                            printMap("absolute")
+                            print()
+                            printMap("relative")
 
         # Print Map
-        printMap()
+        printMap("absolute")
+        print()
+        printMap("relative")
+    # pass sensory input
+
+def secondTestCase():
+    pass
+    
+
+def thirdTestCase():
+    pass
 
 
-        # IF Condition to break the while loop
-        # IF 
+
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    print("FIRST TEST CASE")
+    firstTestCase()
+    print("=========================")
+
+    '''
+    print("SECOND TEST CASE")
+    secondTestCase()
+    print("=========================")
+
+    print("THIRD TEST CASE")
+    thirdTestCase()
+    '''
     
     
 
