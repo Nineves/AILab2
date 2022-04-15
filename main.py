@@ -496,7 +496,8 @@ def agentOn(x, y, dir):
     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = "-"
 
 def initialize():
-    createMap()
+    createMap("absolute")
+    createMap("relative")
     print("Initializing Empty Map...")
 
     wumpusOn(1, 3)
@@ -505,19 +506,20 @@ def initialize():
     portalOn(4, 1)
     coinOn(2, 3)
     agentOn(1, 1, "North")
-    printMap()
+    printMap("absolute")
 
 def firstTestCase():
     prolog = Prolog()
     prolog.consult("Agent.pl")
-
-    action = ["moveforward", "moveforward", "moveforward", "turnRight", "moveforward", "moveforward", "turnRight", "moveforward", "moveforward", "moveforward"]
+    list(prolog.query("reposition([on,off,off,off,off,off])"))
+    #action = ["moveforward", "moveforward", "moveforward", "turnRight", "moveforward", "moveforward", "turnRight", "moveforward", "moveforward", "moveforward"]
     # Create Empty Map
     createMap("absolute")
     createMap("relative")
     # Initialize Agent
     agentOn(1,1, "North")
-    
+    action = list(prolog.query("explore(L)"))
+
     for i in action:
         # get agent's current direction
         dir = agentPos["dir"]
@@ -802,7 +804,7 @@ def firstTestCase():
                     L = ["off", "off", "off", "off", "on", "off"]
                     # Prolog's move(A,L)
                     prolog.query("move({}, {})".format(i, L))
-        elif i == "turnLeft":
+        elif i == "turnleft":
             if dir == "North":
                 # Update Map
                 index = dictionary.get((x, y))
@@ -814,9 +816,6 @@ def firstTestCase():
                 # Prolog's move(A,L)
                 prolog.query("move({}, {})".format(i, L))
                 
-                printMap("absolute")
-                print()
-                printMap("relative")
             elif dir == "East":
                 # Update Map
                 index = dictionary.get((x, y))
@@ -828,9 +827,6 @@ def firstTestCase():
                 # Prolog's move(A,L)
                 prolog.query("move({}, {})".format(i, L))
                 
-                printMap("absolute")
-                print()
-                printMap("relative")
             elif dir == "South":
                 # Update Map
                 index = dictionary.get((x, y))
@@ -842,9 +838,6 @@ def firstTestCase():
                 # Prolog's move(A,L)
                 prolog.query("move({}, {})".format(i, L))
                 
-                printMap("absolute")
-                print()
-                printMap("relative")
             elif dir == "West":
                 # Update Map
                 index = dictionary.get((x, y))
@@ -855,12 +848,8 @@ def firstTestCase():
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
                 prolog.query("move({}, {})".format(i, L))
-                
-                printMap("absolute")
-                print()
-                printMap("relative")
 
-        elif i == "turnRight":
+        elif i == "turnright":
             if dir == "North":
                 # Update Map
                 index = dictionary.get((x, y))
@@ -872,9 +861,6 @@ def firstTestCase():
                 # Prolog's move(A,L)
                 prolog.query("move({}, {})".format(i, L))
 
-                printMap("absolute")
-                print()
-                printMap("relative")
             elif dir == "East":
                 # Update Map
                 index = dictionary.get((x, y))
@@ -886,9 +872,6 @@ def firstTestCase():
                 # Prolog's move(A,L)
                 prolog.query("move({}, {})".format(i, L))
                 
-                printMap("absolute")
-                print()
-                printMap("relative")
             elif dir == "South":
                 # Update Map
                 index = dictionary.get((x, y))
@@ -899,10 +882,7 @@ def firstTestCase():
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
                 prolog.query("move({}, {})".format(i, L))
-                
-                printMap("absolute")
-                print()
-                printMap("relative")
+               
             elif dir == "West":
                 # Update Map
                 index = dictionary.get((x, y))
@@ -913,10 +893,7 @@ def firstTestCase():
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
                 prolog.query("move({}, {})".format(i, L))
-                
-                printMap("absolute")
-                print()
-                printMap("relative")
+
             
         elif i == "shoot":
             index = dictionary.get((x, y))
@@ -1033,7 +1010,7 @@ def thirdTestCase():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print("FIRST TEST CASE")
-    firstTestCase()
+    initialize()
     print("=========================")
 
     '''
