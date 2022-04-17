@@ -253,78 +253,29 @@ Yplus is Y+1,
      (visited(X, Yminus), \+tingle(X, Yminus));
      (visited(X, Yplus), \+tingle(X, Yplus))).
 
- explorePath(X,Y,D,P) :-
-  X == 0,
-  Y == 0,
-  \+((safeToVisit(XSafe,YSafe),\+(visited(XSafe,YSafe)))),
-  \+glitter(G1,G2),
- P = [].
  
- explorePath(X,Y,D,P) :-
- \+(visited(X,Y)),
-P = [].
- 
- 
- explorePath(X,Y,D,[H|Q]) :-
- getForward(X,Y,D,X2,Y2),
- \+(visited(X2,Y2)),
- safe(X2,Y2),
-\+wall(X2,Y2),
- H = moveforward,
- explorePath(X2,Y2,D,Q).
- 
- explorePath(X,Y,D,[H|Q]) :-
- getLeft(X,Y,D,X2,Y2),
- \+(visited(X2,Y2)),
- safe(X2,Y2),
-\+wall(X2,Y2),
- H = turnleft,
-turnLeft(D,NewD),
- explorePath(X,Y,NewD,Q).
- 
- explorePath(X,Y,D,[H|Q]) :-
- getRight(X,Y,D,X2,Y2),
- \+(visited(X2,Y2)),
- safe(X2,Y2),
-\+wall(X2,Y2),
- H = turnright,
-turnRight(D,NewD),
- explorePath(X,Y,NewD,Q).
+newExplorePath(X,Y,D,[H|Q]) :-
+(X == 0,
+Y == 0,
+\+((safeToVisit(XSafe,YSafe),\+(visited(XSafe,YSafe)))),
+ \+glitter(G1,G2))-> Q=[];
 
- explorePath(X,Y,D,[H|Q]) :-
-  getForward(X,Y,D,X2,Y2),
-visited(X2,Y2),
-H = moveforward,
-explorePath(X2,Y2,D,Q).
+( \+(visited(X,Y)))-> Q=[];
+(visited(X,Y), getForward(X,Y,D,X2,Y2),\+(visited(X2,Y2)),safe(X2,Y2),\+wall(X2,Y2))->(H = "moveforward", newExplorePath(X2,Y2,D,Q));
+(visited(X,Y), getLeft(X,Y,D,X2,Y2), \+(visited(X2,Y2)), safe(X2,Y2),\+wall(X2,Y2))->(H = "turnleft",turnLeft(D,NewD),newExplorePath(X,Y,NewD,Q));
+(visited(X,Y), getRight(X,Y,D,X2,Y2), \+(visited(X2,Y2)), safe(X2,Y2),\+wall(X2,Y2))->(H = "turnright",turnRight(D,NewD),newExplorePath(X,Y,NewD,Q));
+(visited(X,Y), getRight(X,Y,D,X2,Y2), \+(visited(X2,Y2)), safe(X2,Y2),\+wall(X2,Y2))->(H = "turnright",turnRight(D,NewD),newExplorePath(X,Y,NewD,Q));
+(visited(X,Y), getForward(X,Y,D,X2,Y2),visited(X2,Y2))->(H = "moveforward", newExplorePath(X2,Y2,D,Q));
+(visited(X,Y), getLeft(X,Y,D,X2,Y2), visited(X2,Y2))->(H = "turnleft", turnLeft(D,NewD), newExplorePath(X,Y,NewD,Q));
+(visited(X,Y), getRight(X,Y,D,X2,Y2), visited(X2,Y2))->(H = "turnright", turnRight(D,NewD), newExplorePath(X,Y,NewD,Q));
+(visited(X,Y),getForward(X,Y,D,X2,Y2),\+visited(X2,Y2),\+safe(X2,Y2))-> (H = "turnright",turnRight(D,NewD),newExplorePath(X,Y,NewD,Q)).
 
- explorePath(X,Y,D,[H|Q]) :-
-  getLeft(X,Y,D,X2,Y2),
-visited(X2,Y2),
-H = turnleft,
-turnLeft(D,NewD),
-explorePath(X,Y,NewD,Q).
 
- explorePath(X,Y,D,[H|Q]) :-
-  getRight(X,Y,D,X2,Y2),
-visited(X2,Y2),
-H = turnright,
-turnRight(D,NewD),
-explorePath(X,Y,NewD,Q).
  
-%The agent needs to turn back
-explorePath(X,Y,D,[H|Q]) :-
-getForward(X,Y,D,X2,Y2),
-\+visited(X2,Y2),
-\+safe(X2,Y2),
-H = turnright,
-turnRight(D,NewD),
-explorePath(X,Y,NewD,Q).
- 
-explore(L) :-
+explore(L):-
 current(X,Y,D),
+newExplorePath(X,Y,D,L).
 
- explorePath(X,Y,D,L).
- 
  
 
 
@@ -337,4 +288,3 @@ turnRight(rnorth,reast).
 turnRight(rwest,rnorth).
 turnRight(rsouth,rwest).
 turnRight(reast,rsouth).
-
