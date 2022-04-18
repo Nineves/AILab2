@@ -44,6 +44,7 @@ relativeMap = []
 actionSequence = []
 
 
+
 # Co-ordinates to absoluteMap index
 dictionary = {
     (1, 4): 8,
@@ -315,12 +316,38 @@ def createMap(mapType):
                 relativeMap.append(rMapCell.copy())
 
 
-def printMap(mapType):
+def printMap(mapType, L, position):
     if mapType=="absolute":
+        sensory = ""
+        if L[0] == "on":
+            sensory = "Confounded-"
+        else:
+            sensory = "C-"
+        if L[1] == "on":
+            sensory = sensory + "Stench-"
+        else:
+            sensory = sensory + "S-"
+        if L[2] == "on":
+            sensory = sensory + "Tingle-"
+        else:
+            sensory = sensory + "T-"
+        if L[3] == "on":
+            sensory = sensory + "Glitter-"
+        else:
+            sensory = sensory + "G-"
+        if L[4] == "on":
+            sensory = sensory + "Bump-"
+        else:
+            sensory = sensory + "B-"
+        if L[5] == "on":
+            sensory = sensory + "Scream"
+        else:
+            sensory = sensory + "S"
         print("============================================================")
         print("========================ABSOLUTE MAP========================")
         print()
         print(actionSequence)
+        print(sensory)
         current = cols
         prev = 0
         total = rows * cols
@@ -349,10 +376,39 @@ def printMap(mapType):
         print("============================================================")
 
     elif mapType=="relative":
+        sensory = ""
+        if L[0] == "on":
+            sensory = "Confounded-"
+        else:
+            sensory = "C-"
+        if L[1] == "on":
+            sensory = sensory + "Stench-"
+        else:
+            sensory = sensory + "S-"
+        if L[2] == "on":
+            sensory = sensory + "Tingle-"
+        else:
+            sensory = sensory + "T-"
+        if L[3] == "on":
+            sensory = sensory + "Glitter-"
+        else:
+            sensory = sensory + "G-"
+        if L[4] == "on":
+            sensory = sensory + "Bump-"
+        else:
+            sensory = sensory + "B-"
+        if L[5] == "on":
+            sensory = sensory + "Scream"
+        else:
+            sensory = sensory + "S"
+        
+
         print("============================================================")
         print("========================RELATIVE MAP========================")
         print()
         print(actionSequence)
+        print(sensory)
+        print("X:", position["rX"], ", Y:", position["rX"], ", Direction:", position["rDir"])
         current = rcols
         prev = 0
         total = rrows * rcols
@@ -1005,10 +1061,7 @@ def secondTestCase():
         dir = agentPos["dir"]
         x = agentPos["x"]
         y = agentPos["y"]
-        rX = agentPos["rX"]
-        rY = agentPos["rY"]
-        rDir = agentPos["rDir"]
-
+        
         if i == "moveforward":
             if dir == "North":
                 # Update map
@@ -1016,6 +1069,12 @@ def secondTestCase():
                 absoluteMap[index][3] = "."
                 absoluteMap[index][4] = "S"
                 absoluteMap[index][5] = "."
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][0] = absoluteMap[index][0]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][1] = absoluteMap[index][1]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][2] = absoluteMap[index][2]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][6] = absoluteMap[index][6]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][7] = absoluteMap[index][7]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][8] = absoluteMap[index][8]
 
                 index = dictionary.get((x, y+1))
                 if index:
@@ -1023,7 +1082,7 @@ def secondTestCase():
                     L = getPercepts(absoluteMap[index])
                     # Prolog's move(A,L)
                     list(prolog.query("move({}, {})".format(i, L)))
-
+                    
                     # Confounded
                     # Teleport Agent to 1,1,"North"
                     if absoluteMap[index][4] == "O":
@@ -1065,19 +1124,20 @@ def secondTestCase():
                     absoluteMap[index][5] = "-"
 
                     relativePos = list(prolog.query("current(X,Y,D)"))
-
-
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][0] = absoluteMap[index][0]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][1] = absoluteMap[index][1]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][2] = absoluteMap[index][2]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][6] = absoluteMap[index][6]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][7] = absoluteMap[index][7]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][8] = absoluteMap[index][8]
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = " "
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "S"
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = " "
+                    
 
                     agentPos["rX"] = relativePos[0]['X']
                     agentPos["rY"] = relativePos[0]['Y']
                     agentPos["rDir"] = relativePos[0]['D']
-
-                    print("Relative X: ", agentPos["rX"])
-                    print("Relative Y: ", agentPos["rY"])
-                    print("Relative Dir: ", agentPos["rDir"])
 
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = "-"
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = "-"
@@ -1119,6 +1179,12 @@ def secondTestCase():
                 absoluteMap[index][3] = "."
                 absoluteMap[index][4] = "S"
                 absoluteMap[index][5] = "."
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][0] = absoluteMap[index][0]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][1] = absoluteMap[index][1]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][2] = absoluteMap[index][2]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][6] = absoluteMap[index][6]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][7] = absoluteMap[index][7]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][8] = absoluteMap[index][8]
 
                 index = dictionary.get((x+1, y))
                 if index:
@@ -1126,7 +1192,7 @@ def secondTestCase():
                     L = getPercepts(absoluteMap[index])
                     # Prolog's move(A,L)
                     list(prolog.query("move({}, {})".format(i, L)))
-
+                    
                     # Confounded
                     # Teleport Agent to 1,1,"North"
                     if absoluteMap[index][4] == "O":
@@ -1171,14 +1237,16 @@ def secondTestCase():
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = " "
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "S"
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = " "
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][0] = absoluteMap[index][0]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][1] = absoluteMap[index][1]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][2] = absoluteMap[index][2]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][6] = absoluteMap[index][6]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][7] = absoluteMap[index][7]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][8] = absoluteMap[index][8]
 
                     agentPos["rX"] = relativePos[0]['X']
                     agentPos["rY"] = relativePos[0]['Y']
                     agentPos["rDir"] = relativePos[0]['D']
-
-                    print("Relative X: ", agentPos["rX"])
-                    print("Relative Y: ", agentPos["rY"])
-                    print("Relative Dir: ", agentPos["rDir"])
 
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = "-"
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = "-"
@@ -1217,14 +1285,19 @@ def secondTestCase():
                 absoluteMap[index][3] = "."
                 absoluteMap[index][4] = "S"
                 absoluteMap[index][5] = "."
-
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][0] = absoluteMap[index][0]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][1] = absoluteMap[index][1]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][2] = absoluteMap[index][2]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][6] = absoluteMap[index][6]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][7] = absoluteMap[index][7]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][8] = absoluteMap[index][8]
                 index = dictionary.get((x, y-1))
                 if index:
                     # Update Prolog's knowledge base
                     L = getPercepts(absoluteMap[index])
                     # Prolog's move(A,L)
                     list(prolog.query("move({}, {})".format(i, L)))
-
+                    
                     # Confounded
                     # Teleport Agent to 1,1,"North"
                     if absoluteMap[index][4] == "O":
@@ -1264,6 +1337,13 @@ def secondTestCase():
                     absoluteMap[index][4] = "v"
                     absoluteMap[index][5] = "-"
 
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][0] = absoluteMap[index][0]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][1] = absoluteMap[index][1]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][2] = absoluteMap[index][2]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][6] = absoluteMap[index][6]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][7] = absoluteMap[index][7]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][8] = absoluteMap[index][8]
+
                     relativePos = list(prolog.query("current(X,Y,D)"))
                     
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = " "
@@ -1273,10 +1353,6 @@ def secondTestCase():
                     agentPos["rX"] = relativePos[0]['X']
                     agentPos["rY"] = relativePos[0]['Y']
                     agentPos["rDir"] = relativePos[0]['D']
-
-                    print("Relative X: ", agentPos["rX"])
-                    print("Relative Y: ", agentPos["rY"])
-                    print("Relative Dir: ", agentPos["rDir"])
 
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = "-"
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = "-"
@@ -1302,6 +1378,7 @@ def secondTestCase():
                     absoluteMap[index][4] = "v"
                     absoluteMap[index][5] = "-"
                     
+                    
                     # Update Prolog's knowledge base
                     L = ["off", "off", "off", "off", "on", "off"]
                     # Prolog's move(A,L)
@@ -1314,6 +1391,12 @@ def secondTestCase():
                 absoluteMap[index][3] = "."
                 absoluteMap[index][4] = "S"
                 absoluteMap[index][5] = "."
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][0] = absoluteMap[index][0]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][1] = absoluteMap[index][1]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][2] = absoluteMap[index][2]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][6] = absoluteMap[index][6]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][7] = absoluteMap[index][7]
+                relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][8] = absoluteMap[index][8]
 
                 index = dictionary.get((x-1, y))
                 if index:
@@ -1321,7 +1404,7 @@ def secondTestCase():
                     L = getPercepts(absoluteMap[index])
                     # Prolog's move(A,L)
                     list(prolog.query("move({}, {})".format(i, L)))
-
+                    
                     # Confounded
                     # Teleport Agent to 1,1,"North"
                     if absoluteMap[index][4] == "O":
@@ -1361,6 +1444,13 @@ def secondTestCase():
                     absoluteMap[index][4] = "<"
                     absoluteMap[index][5] = "-"
 
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][0] = absoluteMap[index][0]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][1] = absoluteMap[index][1]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][2] = absoluteMap[index][2]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][6] = absoluteMap[index][6]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][7] = absoluteMap[index][7]
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][8] = absoluteMap[index][8]
+
                     relativePos = list(prolog.query("current(X,Y,D)"))
                     
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = " "
@@ -1370,10 +1460,6 @@ def secondTestCase():
                     agentPos["rX"] = relativePos[0]['X']
                     agentPos["rY"] = relativePos[0]['Y']
                     agentPos["rDir"] = relativePos[0]['D']
-
-                    print("Relative X: ", agentPos["rX"])
-                    print("Relative Y: ", agentPos["rY"])
-                    print("Relative Dir: ", agentPos["rDir"])
 
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = "-"
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = "-"
@@ -1417,6 +1503,18 @@ def secondTestCase():
                 # Prolog's move(A,L)
                 list(prolog.query("move({}, {})".format(i, L)))
                 
+                relativePos = list(prolog.query("current(X,Y,D)"))
+                agentPos["rDir"] = relativePos[0]['D']
+
+                if agentPos["rDir"] == "rnorth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
+                elif agentPos["rDir"] == "reast":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = ">"
+                elif agentPos["rDir"] == "rsouth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "v"
+                elif agentPos["rDir"] == "rwest":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "<"
+                
             elif dir == "East":
                 # Update Map
                 index = dictionary.get((x, y))
@@ -1427,6 +1525,18 @@ def secondTestCase():
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
                 list(prolog.query("move({}, {})".format(i, L)))
+                
+                relativePos = list(prolog.query("current(X,Y,D)"))
+                agentPos["rDir"] = relativePos[0]['D']
+
+                if agentPos["rDir"] == "rnorth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
+                elif agentPos["rDir"] == "reast":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = ">"
+                elif agentPos["rDir"] == "rsouth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "v"
+                elif agentPos["rDir"] == "rwest":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "<"
                 
             elif dir == "South":
                 # Update Map
@@ -1439,6 +1549,18 @@ def secondTestCase():
                 # Prolog's move(A,L)
                 list(prolog.query("move({}, {})".format(i, L)))
                 
+                relativePos = list(prolog.query("current(X,Y,D)"))
+                agentPos["rDir"] = relativePos[0]['D']
+
+                if agentPos["rDir"] == "rnorth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
+                elif agentPos["rDir"] == "reast":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = ">"
+                elif agentPos["rDir"] == "rsouth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "v"
+                elif agentPos["rDir"] == "rwest":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "<"
+                
             elif dir == "West":
                 # Update Map
                 index = dictionary.get((x, y))
@@ -1449,6 +1571,18 @@ def secondTestCase():
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
                 list(prolog.query("move({}, {})".format(i, L)))
+                
+                relativePos = list(prolog.query("current(X,Y,D)"))
+                agentPos["rDir"] = relativePos[0]['D']
+
+                if agentPos["rDir"] == "rnorth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
+                elif agentPos["rDir"] == "reast":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = ">"
+                elif agentPos["rDir"] == "rsouth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "v"
+                elif agentPos["rDir"] == "rwest":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "<"
 
         elif i == "turnright":
             if dir == "North":
@@ -1461,7 +1595,7 @@ def secondTestCase():
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
                 list(prolog.query("move({}, {})".format(i, L)))
-
+                           
                 relativePos = list(prolog.query("current(X,Y,D)"))
                 agentPos["rDir"] = relativePos[0]['D']
 
@@ -1485,7 +1619,7 @@ def secondTestCase():
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
                 list(prolog.query("move({}, {})".format(i, L)))
-
+                
                 relativePos = list(prolog.query("current(X,Y,D)"))
                 agentPos["rDir"] = relativePos[0]['D']
 
@@ -1508,7 +1642,7 @@ def secondTestCase():
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
                 list(prolog.query("move({}, {})".format(i, L)))
-
+                
                 relativePos = list(prolog.query("current(X,Y,D)"))
                 agentPos["rDir"] = relativePos[0]['D']
 
@@ -1531,7 +1665,7 @@ def secondTestCase():
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
                 list(prolog.query("move({}, {})".format(i, L)))
-
+                
                 relativePos = list(prolog.query("current(X,Y,D)"))
                 agentPos["rDir"] = relativePos[0]['D']
 
@@ -1643,9 +1777,11 @@ def secondTestCase():
                             printMap("relative")
 
         # Print Map
-        printMap("absolute")
+        index = dictionary.get((agentPos["x"], agentPos["y"]))
+        L = getPercepts(absoluteMap[index])
+        printMap("absolute", L, agentPos)
         print()
-        printMap("relative")
+        printMap("relative", L, agentPos)
     
 
 def thirdTestCase():
