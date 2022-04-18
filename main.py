@@ -408,7 +408,7 @@ def printMap(mapType, L, position):
         print()
         print(actionSequence)
         print(sensory)
-        print("X:", position["rX"], ", Y:", position["rX"], ", Direction:", position["rDir"])
+        print("X:", position["rX"], ", Y:", position["rY"], ", Direction:", position["rDir"])
         current = rcols
         prev = 0
         total = rrows * rcols
@@ -1134,7 +1134,6 @@ def secondTestCase():
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "S"
                     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = " "
                     
-
                     agentPos["rX"] = relativePos[0]['X']
                     agentPos["rY"] = relativePos[0]['Y']
                     agentPos["rDir"] = relativePos[0]['D']
@@ -1779,6 +1778,7 @@ def secondTestCase():
         # Print Map
         index = dictionary.get((agentPos["x"], agentPos["y"]))
         L = getPercepts(absoluteMap[index])
+        #output = list(prolog.query("current(X,Y,D)"))
         printMap("absolute", L, agentPos)
         print()
         printMap("relative", L, agentPos)
