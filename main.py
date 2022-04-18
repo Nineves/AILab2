@@ -492,7 +492,7 @@ def agentOn(x, y, dir):
     agentPos["dir"] = dir
     agentPos["rX"] = 0
     agentPos["rY"] = 0
-    agentPos["rDir"] = "North"
+    agentPos["rDir"] = "rnorth"
 
     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = "-"
     relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
@@ -1063,6 +1063,32 @@ def secondTestCase():
                     absoluteMap[index][3] = "-"
                     absoluteMap[index][4] = "^"
                     absoluteMap[index][5] = "-"
+
+                    relativePos = list(prolog.query("current(X,Y,D)"))
+
+
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = " "
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "S"
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = " "
+
+                    agentPos["rX"] = relativePos[0]['X']
+                    agentPos["rY"] = relativePos[0]['Y']
+                    agentPos["rDir"] = relativePos[0]['D']
+
+                    print("Relative X: ", agentPos["rX"])
+                    print("Relative Y: ", agentPos["rY"])
+                    print("Relative Dir: ", agentPos["rDir"])
+
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = "-"
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = "-"
+                    if agentPos["rDir"] == "rnorth":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
+                    elif agentPos["rDir"] == "reast":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = ">"
+                    elif agentPos["rDir"] == "rsouth":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "v"
+                    elif agentPos["rDir"] == "rwest":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "<"
                     
                 else:
                     # BUMPED INTO WALL
@@ -1082,6 +1108,10 @@ def secondTestCase():
                     L = ["off", "off", "off", "off", "on", "off"]
                     # Prolog's move(A,L)
                     list(prolog.query("move({}, {})".format(i, L)))
+
+                    for eac in range(9):
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, (agentPos["rY"]+1)+yOffset)]][eac] = "#"
+                    
                 
             elif dir == "East":
                 # Update map
@@ -1135,6 +1165,31 @@ def secondTestCase():
                     absoluteMap[index][3] = "-"
                     absoluteMap[index][4] = ">"
                     absoluteMap[index][5] = "-"
+
+                    relativePos = list(prolog.query("current(X,Y,D)"))
+                    
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = " "
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "S"
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = " "
+
+                    agentPos["rX"] = relativePos[0]['X']
+                    agentPos["rY"] = relativePos[0]['Y']
+                    agentPos["rDir"] = relativePos[0]['D']
+
+                    print("Relative X: ", agentPos["rX"])
+                    print("Relative Y: ", agentPos["rY"])
+                    print("Relative Dir: ", agentPos["rDir"])
+
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = "-"
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = "-"
+                    if agentPos["rDir"] == "rnorth":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
+                    elif agentPos["rDir"] == "reast":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = ">"
+                    elif agentPos["rDir"] == "rsouth":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "v"
+                    elif agentPos["rDir"] == "rwest":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "<"
                 else:
                     # BUMPED INTO WALL
                     # Turn on bump indicator, print map, turn off bump indicator
@@ -1153,6 +1208,9 @@ def secondTestCase():
                     L = ["off", "off", "off", "off", "on", "off"]
                     # Prolog's move(A,L)
                     list(prolog.query("move({}, {})".format(i, L)))
+
+                    for eac in range(9):
+                        relativeMap[rdictionary[((agentPos["rX"]+1)+xOffset, agentPos["rY"]+yOffset)]][eac] = "#"
             elif dir == "South":
                 # Update map
                 index = dictionary.get((x, y))
@@ -1205,6 +1263,31 @@ def secondTestCase():
                     absoluteMap[index][3] = "-"
                     absoluteMap[index][4] = "v"
                     absoluteMap[index][5] = "-"
+
+                    relativePos = list(prolog.query("current(X,Y,D)"))
+                    
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = " "
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "S"
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = " "
+
+                    agentPos["rX"] = relativePos[0]['X']
+                    agentPos["rY"] = relativePos[0]['Y']
+                    agentPos["rDir"] = relativePos[0]['D']
+
+                    print("Relative X: ", agentPos["rX"])
+                    print("Relative Y: ", agentPos["rY"])
+                    print("Relative Dir: ", agentPos["rDir"])
+
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = "-"
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = "-"
+                    if agentPos["rDir"] == "rnorth":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
+                    elif agentPos["rDir"] == "reast":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = ">"
+                    elif agentPos["rDir"] == "rsouth":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "v"
+                    elif agentPos["rDir"] == "rwest":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "<"
                 else:
                     # BUMPED INTO WALL
                     # Turn on bump indicator, print map, turn off bump indicator
@@ -1223,6 +1306,8 @@ def secondTestCase():
                     L = ["off", "off", "off", "off", "on", "off"]
                     # Prolog's move(A,L)
                     list(prolog.query("move({}, {})".format(i, L)))
+                    for eac in range(9):
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, (agentPos["rY"]-1)+yOffset)]][eac] = "#"
             elif dir == "West":
                 # Update map
                 index = dictionary.get((x, y))
@@ -1275,6 +1360,31 @@ def secondTestCase():
                     absoluteMap[index][3] = "-"
                     absoluteMap[index][4] = "<"
                     absoluteMap[index][5] = "-"
+
+                    relativePos = list(prolog.query("current(X,Y,D)"))
+                    
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = " "
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "S"
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = " "
+
+                    agentPos["rX"] = relativePos[0]['X']
+                    agentPos["rY"] = relativePos[0]['Y']
+                    agentPos["rDir"] = relativePos[0]['D']
+
+                    print("Relative X: ", agentPos["rX"])
+                    print("Relative Y: ", agentPos["rY"])
+                    print("Relative Dir: ", agentPos["rDir"])
+
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][3] = "-"
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][5] = "-"
+                    if agentPos["rDir"] == "rnorth":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
+                    elif agentPos["rDir"] == "reast":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = ">"
+                    elif agentPos["rDir"] == "rsouth":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "v"
+                    elif agentPos["rDir"] == "rwest":
+                        relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "<"
                 else:
                     # BUMPED INTO WALL
                     # Turn on bump indicator, print map, turn off bump indicator
@@ -1293,6 +1403,8 @@ def secondTestCase():
                     L = ["off", "off", "off", "off", "on", "off"]
                     # Prolog's move(A,L)
                     list(prolog.query("move({}, {})".format(i, L)))
+                    for eac in range(9):
+                        relativeMap[rdictionary[((agentPos["rX"]-1)+xOffset, agentPos["rY"]+yOffset)]][eac] = "#"
         elif i == "turnleft":
             if dir == "North":
                 # Update Map
@@ -1348,7 +1460,20 @@ def secondTestCase():
                 # Update Prolog's knowledge base
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
-                prolog.query("move({}, {})".format(i, L))
+                list(prolog.query("move({}, {})".format(i, L)))
+
+                relativePos = list(prolog.query("current(X,Y,D)"))
+                agentPos["rDir"] = relativePos[0]['D']
+
+                if agentPos["rDir"] == "rnorth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
+                elif agentPos["rDir"] == "reast":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = ">"
+                elif agentPos["rDir"] == "rsouth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "v"
+                elif agentPos["rDir"] == "rwest":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "<"
+
 
             elif dir == "East":
                 # Update Map
@@ -1359,7 +1484,19 @@ def secondTestCase():
                 # Update Prolog's knowledge base
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
-                prolog.query("move({}, {})".format(i, L))
+                list(prolog.query("move({}, {})".format(i, L)))
+
+                relativePos = list(prolog.query("current(X,Y,D)"))
+                agentPos["rDir"] = relativePos[0]['D']
+
+                if agentPos["rDir"] == "rnorth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
+                elif agentPos["rDir"] == "reast":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = ">"
+                elif agentPos["rDir"] == "rsouth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "v"
+                elif agentPos["rDir"] == "rwest":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "<"
                 
             elif dir == "South":
                 # Update Map
@@ -1371,6 +1508,18 @@ def secondTestCase():
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
                 list(prolog.query("move({}, {})".format(i, L)))
+
+                relativePos = list(prolog.query("current(X,Y,D)"))
+                agentPos["rDir"] = relativePos[0]['D']
+
+                if agentPos["rDir"] == "rnorth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
+                elif agentPos["rDir"] == "reast":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = ">"
+                elif agentPos["rDir"] == "rsouth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "v"
+                elif agentPos["rDir"] == "rwest":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "<"
                
             elif dir == "West":
                 # Update Map
@@ -1382,6 +1531,18 @@ def secondTestCase():
                 L = getPercepts(absoluteMap[index])
                 # Prolog's move(A,L)
                 list(prolog.query("move({}, {})".format(i, L)))
+
+                relativePos = list(prolog.query("current(X,Y,D)"))
+                agentPos["rDir"] = relativePos[0]['D']
+
+                if agentPos["rDir"] == "rnorth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "^"
+                elif agentPos["rDir"] == "reast":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = ">"
+                elif agentPos["rDir"] == "rsouth":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "v"
+                elif agentPos["rDir"] == "rwest":
+                    relativeMap[rdictionary[(agentPos["rX"]+xOffset, agentPos["rY"]+yOffset)]][4] = "<"
 
             
         elif i == "shoot":
