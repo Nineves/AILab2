@@ -494,16 +494,15 @@ def initializeAgent(safeLoc,fileName,absoluteMap):
     return prolog
 
 def getAbsDir(initialAbsDirection, currentDiretion):
-    absDirection = ""
     if initialAbsDirection == "north":
         if currentDiretion == "rnorth":
             absDirection = "north"
         elif currentDiretion == "rsouth":
             absDirection = "south"
         elif currentDiretion == "rwest":
-            absDirection == "west"
+            absDirection = "west"
         else:
-            absDirection == "east"
+            absDirection = "east"
     elif initialAbsDirection == "south":
         if currentDiretion == "rnorth":
             absDirection = "south"
@@ -537,7 +536,7 @@ def renewLocForward(currentLocation, initialAbsDirection, currentRelativeLocatio
     #print(initialAbsDirection,currentRelativeLocation["D"])
     absDirection = getAbsDir(initialAbsDirection, currentRelativeLocation["D"])
     (X,Y) = currentLocation
-    #print(absDirection)
+    #print("hi",absDirection)
     if absDirection == "north":
         return (X,Y+1)
     elif absDirection == "south":
@@ -732,13 +731,15 @@ def printLocalizationMap(prolog, relativeMap):
     relativeMap[rdictionary[(currentAgent[0]+xOffset,currentAgent[1]+yOffset)]][5] = "-"
     printMap("relative", relativeMap)
 
-def takeActions(curLoc,initDir,actionList,prolog,absoluteMap):
-    newAbsDir = initDir
+def takeActions(curLoc,curDir,initDir,actionList,prolog,absoluteMap):
+    newAbsDir = curDir
     newAbsLoc = curLoc
     
     for action in actionList:
         #print("Current ABS LOCATION", newAbsLoc,newAbsDir)
         relativeMap = createMap("relative")
+        if action == []:
+            break
         action = action.decode('utf-8')
         curRelLoc = list(prolog.query("current(X,Y,D)"))
         curPercepts = getPercepts(absoluteMap[dictionary[newAbsLoc]])
@@ -746,9 +747,11 @@ def takeActions(curLoc,initDir,actionList,prolog,absoluteMap):
             print("Ask the agent to pick the coin.")
             list(prolog.query("move({},{})".format("pickup", curPercepts)))
         if action == "moveforward":
-            oldAbsLoc = newAbsLoc
+            oldAbsLoc = newAbsLoc    
+            #print(curRelLoc[0],initDir)
+            #print("oldABs",newAbsLoc)
             newAbsLoc = renewLocForward(newAbsLoc,initDir,curRelLoc[0])
-        
+            #print("newABs",newAbsLoc)
             
             if newAbsLoc[0]>=6 or newAbsLoc[0]<=0 or newAbsLoc[1]<=0 or newAbsLoc[1]>=5:
                 relativeMap[rdictionary[(curRelLoc[0]["X"]+xOffset,curRelLoc[0]['Y']+yOffset)]][7] = "B"
@@ -769,7 +772,9 @@ def takeActions(curLoc,initDir,actionList,prolog,absoluteMap):
                 list(prolog.query("move({},{})".format("moveforward", percepts)))
                 
         elif action == "turnleft":
+            #print("before",newAbsDir)
             newAbsDir = renewDirLeft(newAbsDir)
+            #print("after",newAbsDir)
             index = dictionary[newAbsLoc]
             percepts = getPercepts(absoluteMap[index])
             list(prolog.query("move({},{})".format("turnleft", percepts)))
@@ -795,7 +800,7 @@ def takeActions(curLoc,initDir,actionList,prolog,absoluteMap):
         print("Percepts: ",turnPerceptsToString(percepts))
         print()
         printExploreRelativeMap(prolog,relativeMap)
-    return newAbsLoc
+    return newAbsLoc,newAbsDir
 
 def endCondition(prolog):
     safe = list(prolog.query("safeToVisit(X,Y)"))
@@ -810,7 +815,7 @@ def testLocalization():
     # Create Empty Map
     absoluteMap = initialize()
     agentOn(1, 1, "North",absoluteMap)
-    AGENT_PATH = "Agent.pl"
+    AGENT_PATH = "/Users/wangyiying/Desktop/Prolog/AILab2/Agent.pl"
     safeLoc = getSafeLocation(absoluteMap)
     prolog = initializeAgent(safeLoc,AGENT_PATH,absoluteMap)
     relativeMap = createMap("relative")
@@ -833,9 +838,10 @@ def testLocalization():
 def testExplore():
     # need to change the path
     absoluteMap = initialize()
-    AGENT_PATH = "Agent.pl"
-    TTL = 8 #Time to live
+    AGENT_PATH = "/Users/wangyiying/Desktop/Prolog/AILab2/Agent.pl"
+    TTL = 20 #Time to live
     safeLoc = getSafeLocation(absoluteMap) #(index,(X,Y))
+    initDir = "north"
     Dir = "north"  #can be random
     prolog = initializeAgent(safeLoc,AGENT_PATH,absoluteMap)  
     
@@ -846,14 +852,18 @@ def testExplore():
     relativeMap = createMap("relative")
     printExploreRelativeMap(prolog,relativeMap)
     L = list(prolog.query("explore(L)"))
+    
     curLoc = (1,1)
     while(len(L[0]['L'])!=0 and TTL>0 and not endCondition(prolog)):
+        
+        print(L[0]['L'])
         print("Actions: ", L[0]['L'])
         relativeMap = createMap("relative")
-        newCurLoc=takeActions(curLoc,Dir,L[0]['L'],prolog, absoluteMap)
+        newCurLoc,newCurDir=takeActions(curLoc,Dir,initDir,L[0]['L'],prolog, absoluteMap)
         
         L = list(prolog.query("explore(L)"))
         curLoc = newCurLoc
+        Dir = newCurDir
         TTL = TTL-1
     if len(L[0]['L'])==0:
         print("No more available actions!")
@@ -871,7 +881,7 @@ def testExplore():
     
 def testPortal():
     absoluteMap = initialize()
-    AGENT_PATH = "Agent.pl"
+    AGENT_PATH = "/Users/wangyiying/Desktop/Prolog/AILab2/Agent.pl"
     safeLoc = getSafeLocation(absoluteMap) #(index,(X,Y))
     Dir = "north"  #can be random
     prolog = initializeAgent(safeLoc,AGENT_PATH,absoluteMap)  
@@ -918,6 +928,6 @@ if __name__ == '__main__':
     print()
     print("TESTING REPOSITION/1")
     print("=========================")
-    testPortal()
+    #testPortal()
     print("=========================")
 
