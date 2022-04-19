@@ -809,7 +809,7 @@ def testLocalization():
     # Create Empty Map
     absoluteMap = initialize()
     agentOn(1, 1, "North",absoluteMap)
-    AGENT_PATH = "/Users/wangyiying/Desktop/Prolog/AILab2/Agent.pl"
+    AGENT_PATH = "Agent.pl"
     safeLoc = getSafeLocation(absoluteMap)
     prolog = initializeAgent(safeLoc,AGENT_PATH,absoluteMap)
     relativeMap = createMap("relative")
@@ -832,7 +832,7 @@ def testLocalization():
 def testExplore():
     # need to change the path
     absoluteMap = initialize()
-    AGENT_PATH = "/Users/wangyiying/Desktop/Prolog/AILab2/Agent.pl"
+    AGENT_PATH = "Agent.pl"
     TTL = 8 #Time to live
     safeLoc = getSafeLocation(absoluteMap) #(index,(X,Y))
     Dir = "north"  #can be random
@@ -870,7 +870,7 @@ def testExplore():
     
 def testPortal():
     absoluteMap = initialize()
-    AGENT_PATH = "/Users/wangyiying/Desktop/Prolog/AILab2/Agent.pl"
+    AGENT_PATH = "Agent.pl"
     safeLoc = getSafeLocation(absoluteMap) #(index,(X,Y))
     Dir = "north"  #can be random
     prolog = initializeAgent(safeLoc,AGENT_PATH,absoluteMap)  
