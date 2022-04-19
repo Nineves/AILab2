@@ -252,15 +252,16 @@ Yplus is Y+1,
      (visited(Xplus, Y), \+tingle(Xplus, Y));
      (visited(X, Yminus), \+tingle(X, Yminus));
      (visited(X, Yplus), \+tingle(X, Yplus))).
+     
 
- 
+
 newExplorePath(X,Y,D,[H|Q]) :-
-(X == 0,
+
+ (X == 0,
 Y == 0,
 \+((safeToVisit(XSafe,YSafe),\+(visited(XSafe,YSafe)))),
- \+glitter(G1,G2))-> Q=[];
-
-( \+(visited(X,Y)))-> Q=[];
+ \+glitter(G1,G2))-> (H=[],Q=[]);
+(\+(visited(X,Y)))-> (H=[],Q=[]);
 (visited(X,Y), getForward(X,Y,D,X2,Y2),\+(visited(X2,Y2)),safe(X2,Y2),\+wall(X2,Y2))->(H = "moveforward", newExplorePath(X2,Y2,D,Q));
 (visited(X,Y), getLeft(X,Y,D,X2,Y2), \+(visited(X2,Y2)), safe(X2,Y2),\+wall(X2,Y2))->(H = "turnleft",turnLeft(D,NewD),newExplorePath(X,Y,NewD,Q));
 (visited(X,Y), getRight(X,Y,D,X2,Y2), \+(visited(X2,Y2)), safe(X2,Y2),\+wall(X2,Y2))->(H = "turnright",turnRight(D,NewD),newExplorePath(X,Y,NewD,Q));
