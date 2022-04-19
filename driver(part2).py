@@ -740,7 +740,8 @@ def takeActions(curLoc,curDir,initDir,actionList,prolog,absoluteMap):
         relativeMap = createMap("relative")
         if action == []:
             break
-        action = action.decode('utf-8')
+        if type(action)!= str:
+            action = action.decode('utf-8')
         curRelLoc = list(prolog.query("current(X,Y,D)"))
         curPercepts = getPercepts(absoluteMap[dictionary[newAbsLoc]])
         if curPercepts[3] == "on":
@@ -812,33 +813,28 @@ def endCondition(prolog):
     return False
 
 def testLocalization():
-    action = ["moveforward", "moveforward", "moveforward", "turnright", "moveforward", "moveforward", "turnright", "moveforward", "moveforward", "moveforward"]
-    # Create Empty Map
+    action = ["moveforward", "moveforward", "turnright", "moveforward", "moveforward"]
     absoluteMap = initialize()
-    AGENT_PATH = "/Users/wangyiying/Desktop/Prolog/AILab2/Agent.pl"
+    AGENT_PATH = "Agent.pl"
     safeLoc = getSafeLocation(absoluteMap)
-    prolog = initializeAgent(safeLoc,AGENT_PATH,absoluteMap)
+    prolog = initializeAgent((0,(1,1)),AGENT_PATH,absoluteMap)
     relativeMap = createMap("relative")
     # Initialize Agent
-    agentOn(safeLoc[1][0],safeLoc[1][1], "North",absoluteMap)
+    agentOn(1,1, "North",absoluteMap)
     printMap("absolute",absoluteMap)
-    absLoc = (safeLoc[1][0],safeLoc[1][1],"north")
+    absLoc = (1,1,"north")
     currentLoc = getAgentLocation(prolog)
     relativeMap[rdictionary[(currentLoc[0]+xOffset,currentLoc[1]+yOffset)]][4] = "S"
     relativeMap[rdictionary[(currentLoc[0]+xOffset,currentLoc[1]+yOffset)]][5] = "-"
+
+    print("Actions: ", action)
+    takeActions((1,1),"north","north",action,prolog,absoluteMap)
     
-    for i in action:
-        # get agent's current direction
-        index = dictionary[(absLoc[0],absLoc[1])]
-        percepts = getPercepts(absoluteMap[index])
-        list(prolog.query("move({},{})".format(i,percepts)))
-        print("Action: ", i)
-        printLocalizationMap(prolog, relativeMap)
 
 def testExplore():
     # need to change the path
     absoluteMap = initialize()
-    AGENT_PATH = "/Users/wangyiying/Desktop/Prolog/AILab2/Agent.pl"
+    AGENT_PATH = "Agent.pl"
     TTL = 20 #Time to live
     safeLoc = getSafeLocation(absoluteMap) #(index,(X,Y))
     initDir = "north"
@@ -881,7 +877,7 @@ def testExplore():
     
 def testPortal():
     absoluteMap = initialize()
-    AGENT_PATH = "/Users/wangyiying/Desktop/Prolog/AILab2/Agent.pl"
+    AGENT_PATH = "Agent.pl"
     safeLoc = getSafeLocation(absoluteMap) #(index,(X,Y))
     Dir = "north"  #can be random
     prolog = initializeAgent(safeLoc,AGENT_PATH,absoluteMap)  
@@ -916,13 +912,13 @@ if __name__ == '__main__':
     
     print("TESTING LOCALIZING ABILITY")
     print("=========================")
-    #testLocalization()
+    testLocalization()
     print("=========================")
     print()
     print()
     print("TESTING EXPLORE/1")
     print("=========================")
-    testExplore()
+    #testExplore()
     print("=========================")
     print()
     print()
