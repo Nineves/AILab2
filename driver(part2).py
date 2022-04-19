@@ -462,7 +462,7 @@ def initialize():
     wumpusOn(1, 3,absoluteMap)
     portalOn(5, 4,absoluteMap)
     portalOn(4, 3,absoluteMap)
-    portalOn(4, 1,absoluteMap)
+    portalOn(3, 1,absoluteMap)
     coinOn(2, 3,absoluteMap)
     coinOn(1, 2, absoluteMap)
     #agentOn(1, 1, "North",absoluteMap)
@@ -486,7 +486,7 @@ def initializeAgent(safeLoc,fileName,absoluteMap):
     prolog.consult(fileName)
     list(prolog.query("reborn"))
 
-    percepts = getPercepts(absoluteMap[dictionary[(1,1)]]) # get initial percept
+    percepts = getPercepts(absoluteMap[dictionary[safeLoc[1]]]) # get initial percept
     percepts[0] = "on"
     print("ppp", safeLoc)
     
@@ -746,6 +746,7 @@ def takeActions(curLoc,curDir,initDir,actionList,prolog,absoluteMap):
         if curPercepts[3] == "on":
             print("Ask the agent to pick the coin.")
             list(prolog.query("move({},{})".format("pickup", curPercepts)))
+            absoluteMap[dictionary[newAbsLoc]][6]="."
         if action == "moveforward":
             oldAbsLoc = newAbsLoc    
             #print(curRelLoc[0],initDir)
@@ -814,15 +815,14 @@ def testLocalization():
     action = ["moveforward", "moveforward", "moveforward", "turnright", "moveforward", "moveforward", "turnright", "moveforward", "moveforward", "moveforward"]
     # Create Empty Map
     absoluteMap = initialize()
-    agentOn(1, 1, "North",absoluteMap)
     AGENT_PATH = "/Users/wangyiying/Desktop/Prolog/AILab2/Agent.pl"
     safeLoc = getSafeLocation(absoluteMap)
     prolog = initializeAgent(safeLoc,AGENT_PATH,absoluteMap)
     relativeMap = createMap("relative")
     # Initialize Agent
-    agentOn(1,1, "North",absoluteMap)
+    agentOn(safeLoc[1][0],safeLoc[1][1], "North",absoluteMap)
     printMap("absolute",absoluteMap)
-    absLoc = (1,1,"north")
+    absLoc = (safeLoc[1][0],safeLoc[1][1],"north")
     currentLoc = getAgentLocation(prolog)
     relativeMap[rdictionary[(currentLoc[0]+xOffset,currentLoc[1]+yOffset)]][4] = "S"
     relativeMap[rdictionary[(currentLoc[0]+xOffset,currentLoc[1]+yOffset)]][5] = "-"
@@ -846,17 +846,17 @@ def testExplore():
     prolog = initializeAgent(safeLoc,AGENT_PATH,absoluteMap)  
     
     # initialize Agent
-    agentOn(1,1, "North",absoluteMap)
+    agentOn(safeLoc[1][0],safeLoc[1][1], "North",absoluteMap)
     printMap("absolute",absoluteMap)
     print("Agent's current knowledge: ")
     relativeMap = createMap("relative")
     printExploreRelativeMap(prolog,relativeMap)
     L = list(prolog.query("explore(L)"))
     
-    curLoc = (1,1)
+    curLoc = (safeLoc[1][0],safeLoc[1][1])
     while(len(L[0]['L'])!=0 and TTL>0 and not endCondition(prolog)):
-        
-        print(L[0]['L'])
+        if L[0]['L'] == [[]]:
+            break
         print("Actions: ", L[0]['L'])
         relativeMap = createMap("relative")
         newCurLoc,newCurDir=takeActions(curLoc,Dir,initDir,L[0]['L'],prolog, absoluteMap)
