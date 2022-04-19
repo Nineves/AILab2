@@ -788,7 +788,8 @@ def takeActions(curLoc,initDir,actionList,prolog,absoluteMap):
                 list(prolog.query("move({},{})".format("shoot", percepts)))
                 printExploreRelativeMap(prolog,relativeMap)
                 relativeMap[rdictionary[(curRelLoc["X"]+xOffset,curRelLoc['Y']+yOffset)]][8] = "."
-            list(prolog.query("move({},{})".format("shoot", percepts)))
+            else:
+                list(prolog.query("move({},{})".format("shoot", percepts)))
 
         print(percepts)
         print("Percepts: ",turnPerceptsToString(percepts))
