@@ -1040,7 +1040,9 @@ def firstTestCase():
                             #printMap("relative")
 
         # Print Map
-        printMap("absolute")
+        index = dictionary.get((agentPos["x"], agentPos["y"]))
+        L = getPercepts(absoluteMap[index])
+        printMap("absolute", L, agentPos)
         print()
         #printMap("relative")
 
@@ -1791,11 +1793,11 @@ def thirdTestCase():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    '''
+    
     print("FIRST TEST CASE")
     firstTestCase()
     print("=========================")
-    '''
+    
     
     print("SECOND TEST CASE")
     secondTestCase()
