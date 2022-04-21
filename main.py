@@ -1086,7 +1086,7 @@ def secondTestCase():
                     list(prolog.query("move({}, {})".format(i, L)))
                     
                     # Confounded
-                    # Teleport Agent to 1,1,"North"
+                    # Teleport Agent to Safe visited location
                     if absoluteMap[index][4] == "O":
                         # Update map
                         absoluteMap[index][3] = " "
